@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "527017100609",
+    "project_id": "gps-student-attendance",
+    "storage_bucket": "gps-student-attendance.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:527017100609:android:9f4fee82436b0c522f8dc0",
+        "android_client_info": {
+          "package_name": "com.kodaTeck.gps_student_attendance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvnpVnbAfQ_l29HPU_bUulwGjzb_uZmoA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

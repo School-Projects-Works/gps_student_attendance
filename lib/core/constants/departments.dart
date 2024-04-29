@@ -1,0 +1,15 @@
+List<String> departmentList = [
+  'Information Technology Edu',
+  'Mathematics Edu',
+  'Accounting Studies',
+  'Management Studies',
+  'Construction Tech & Management Edu',
+  'Wood Science and Technology Edu',
+  'Architecture and Civil Engineering',
+  'Automotive & Mechnical Technology Edu',
+  'Electrical & Electronics Tech Edu',
+  'Catering & Hospitality Edu',
+  'Fashion & Textiles Design Edu',
+  'Languages Edu',
+  'Interdisciplinary Studies',
+];
