@@ -72,4 +72,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'gps-student-attendance.appspot.com',
     iosBundleId: 'com.kodaTeck.gpsStudentAttendance',
   );
+
 }

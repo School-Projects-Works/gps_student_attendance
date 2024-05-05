@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gps_student_attendance/features/auth/data/user_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
 
 class AuthServices {
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -40,48 +40,75 @@ class AuthServices {
     }
   }
 
-  static Future<(String, User?)> login({required String email, required String password}) async{
-    try{
+  static Future<(String, User?)> login(
+      {required String email, required String password}) async {
+    try {
       final credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-          if(credential.user != null){
-            return ('Login successful', credential.user);
-          }else{
-            return ('Login failed', null);
-          }
+      if (credential.user != null) {
+        return ('Login successful', credential.user);
+      } else {
+        return ('Login failed', null);
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return ('No user found for that email.', null);
       } else if (e.code == 'wrong-password') {
         return ('Wrong password provided for that user.', null);
+      }else if(e.toString().contains('invalid')||e.toString().contains('incorrect')){
+        return ('No user found for that email.', null);
       }
       return (e.toString(), null);
-    }catch(error){
-      return (error.toString(), null);
+    } catch (error) {
+      return ('Something went wrong..Try again', null);
     }
   }
 
-  static Future<(String, Users)>getUserData(String uid)async {
-    try{
+  static Future<(String, Users)> getUserData(String uid) async {
+    try {
       var user = await firestore.collection('users').doc(uid).get();
-      if(user.exists){
+      if (user.exists) {
         return ('User found', Users.fromMap(user.data()!));
-      }else{
+      } else {
         return ('User not found', Users());
       }
-    }catch(e){
+    } catch (e) {
       return (e.toString(), Users());
     }
   }
 
-  static Future<Users>checkIfLoggedIn() async{
-     final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var user = prefs.getString('user');
-      if(user!=null){
-        var (_, userData) = await getUserData(user);
-        return userData;
-      }else{
-        return Users();
-      }
+  static Future<Users> checkIfLoggedIn() async {
+    var box = Hive.box('user');
+    var user = box.get('id');
+    if (user != null) {
+      var (_, userData) = await getUserData(user);
+      return userData;
+    } else {
+      return Users();
+    }
+  }
+
+  static Future<bool> signOut() async {
+    try {
+      await auth.signOut();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<void> saveUserData(Users user) async {
+    CollectionReference users = firestore.collection('users');
+    await users.doc(user.id).set(user.toMap());
+  }
+
+  static Future<List<Users>> getUsers()async {
+    var users = await firestore.collection('users').get();
+    return users.docs.map((e) => Users.fromMap(e.data())).toList();
+  }
+
+  static Future<void> updateUserData(Users user) async {
+    CollectionReference users = firestore.collection('users');
+    await users.doc(user.id).update(user.toMap());
   }
 }

@@ -9,8 +9,8 @@ class RouterInfo {
       RouterInfo(name: 'register', path: '/register');
   static RouterInfo forgetPasswordRoute =
       RouterInfo(name: 'forget-password', path: '/forget-password');
-  static RouterInfo studentHomeRoute =
-      RouterInfo(name: 'student-home', path: '/student/home');
-  static RouterInfo lecturerHomeRoute =
-      RouterInfo(name: 'lecturer-home', path: '/lecturer/home');
+  static RouterInfo homeRoute =
+      RouterInfo(name: 'home', path: '/home');
+
+      static RouterInfo profileRoute = RouterInfo(name: 'profile', path: '/profile');
 }

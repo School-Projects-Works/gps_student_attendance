@@ -5,7 +5,6 @@ import 'package:gps_student_attendance/config/router/router_info.dart';
 import 'package:gps_student_attendance/core/widget/custom_button.dart';
 import 'package:gps_student_attendance/core/widget/custom_input.dart';
 import 'package:gps_student_attendance/features/auth/provider/login_provider.dart';
-import 'package:gps_student_attendance/features/auth/provider/register_screen_provider.dart';
 import 'package:gps_student_attendance/generated/assets.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -19,12 +18,16 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var styles = CustomStyles(context: context);
     var breakPiont = ResponsiveBreakpoints.of(context);
     var provider = ref.watch(loginProvider);
     var notifier = ref.read(loginProvider.notifier);
+    _emailController.text = breakPiont.isMobile ? 'teck.koda@gmail.com' :'emmanuelfrimpong07@gmail.com';
+    _passwordController.text = breakPiont.isMobile ? 'teck1234' :'0548405953';
     return Container(
       color: Colors.white,
       height: breakPiont.screenHeight,
@@ -118,6 +121,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                       CustomTextFields(
                                         label: 'Email',
                                         prefixIcon: Icons.email,
+                                        controller: _emailController,
                                         hintText: 'Enter your email',
                                         keyboardType:
                                             TextInputType.emailAddress,
@@ -140,6 +144,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         label: 'Password',
                                         prefixIcon: Icons.lock,
                                         hintText: 'Enter your password',
+                                        controller: _passwordController,
                                         obscureText: ref
                                             .watch(loginObsecureTextProvider),
                                         suffixIcon: IconButton(

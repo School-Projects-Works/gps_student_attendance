@@ -4,12 +4,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gps_student_attendance/core/constants/departments.dart';
 import 'package:gps_student_attendance/core/widget/custom_button.dart';
-import 'package:gps_student_attendance/core/widget/custom_dialog.dart';
 import 'package:gps_student_attendance/core/widget/custom_drop_down.dart';
 import 'package:gps_student_attendance/core/widget/custom_input.dart';
 import 'package:gps_student_attendance/core/widget/custom_selector.dart';
 import 'package:gps_student_attendance/features/auth/provider/new_user_provider.dart';
-import 'package:gps_student_attendance/features/auth/provider/register_screen_provider.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
