@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 
@@ -6,6 +7,7 @@ class AttendanceModel {
   String? id;
   String? classId;
   String? className;
+  String? classCode;
   String? lecturerId;
   String? lecturerName;
   int? date;
@@ -22,6 +24,7 @@ class AttendanceModel {
     this.id,
     this.classId,
     this.className,
+    this.classCode,
     this.lecturerId,
     this.lecturerName,
     this.date,
@@ -40,6 +43,7 @@ class AttendanceModel {
     ValueGetter<String?>? id,
     ValueGetter<String?>? classId,
     ValueGetter<String?>? className,
+    ValueGetter<String?>? classCode,
     ValueGetter<String?>? lecturerId,
     ValueGetter<String?>? lecturerName,
     ValueGetter<int?>? date,
@@ -57,6 +61,7 @@ class AttendanceModel {
       id: id != null ? id() : this.id,
       classId: classId != null ? classId() : this.classId,
       className: className != null ? className() : this.className,
+      classCode: classCode != null ? classCode() : this.classCode,
       lecturerId: lecturerId != null ? lecturerId() : this.lecturerId,
       lecturerName: lecturerName != null ? lecturerName() : this.lecturerName,
       date: date != null ? date() : this.date,
@@ -77,6 +82,7 @@ class AttendanceModel {
       'id': id,
       'classId': classId,
       'className': className,
+      'classCode': classCode,
       'lecturerId': lecturerId,
       'lecturerName': lecturerName,
       'date': date,
@@ -97,6 +103,7 @@ class AttendanceModel {
       id: map['id'],
       classId: map['classId'],
       className: map['className'],
+      classCode: map['classCode'],
       lecturerId: map['lecturerId'],
       lecturerName: map['lecturerName'],
       date: map['date']?.toInt(),
@@ -114,11 +121,12 @@ class AttendanceModel {
 
   String toJson() => json.encode(toMap());
 
-  factory AttendanceModel.fromJson(String source) => AttendanceModel.fromMap(json.decode(source));
+  factory AttendanceModel.fromJson(String source) =>
+      AttendanceModel.fromMap(json.decode(source));
 
   @override
   String toString() {
-    return 'AttendanceModel(id: $id, classId: $classId, className: $className, lecturerId: $lecturerId, lecturerName: $lecturerName, date: $date, startTime: $startTime, endTime: $endTime, lat: $lat, long: $long, status: $status, studentIds: $studentIds, students: $students, qrcode: $qrcode, createdAt: $createdAt)';
+    return 'AttendanceModel(id: $id, classId: $classId, className: $className, classCode: $classCode, lecturerId: $lecturerId, lecturerName: $lecturerName, date: $date, startTime: $startTime, endTime: $endTime, lat: $lat, long: $long, status: $status, studentIds: $studentIds, students: $students, qrcode: $qrcode, createdAt: $createdAt)';
   }
 
   @override
@@ -129,6 +137,7 @@ class AttendanceModel {
       other.id == id &&
       other.classId == classId &&
       other.className == className &&
+      other.classCode == classCode &&
       other.lecturerId == lecturerId &&
       other.lecturerName == lecturerName &&
       other.date == date &&
@@ -148,6 +157,7 @@ class AttendanceModel {
     return id.hashCode ^
       classId.hashCode ^
       className.hashCode ^
+      classCode.hashCode ^
       lecturerId.hashCode ^
       lecturerName.hashCode ^
       date.hashCode ^

@@ -1,32 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gps_student_attendance/config/router/router_info.dart';
 import 'package:gps_student_attendance/core/constants/departments.dart';
 import 'package:gps_student_attendance/core/constants/time_list.dart';
-import 'package:gps_student_attendance/core/widget/custom_button.dart';
 import 'package:gps_student_attendance/core/widget/custom_drop_down.dart';
-import 'package:gps_student_attendance/core/widget/custom_input.dart';
-import 'package:gps_student_attendance/features/class/provider/new_class_provider.dart';
+import 'package:gps_student_attendance/features/class/provider/classes_provider.dart';
+import 'package:gps_student_attendance/features/class/provider/edit_class_provider.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-class NewClass extends ConsumerStatefulWidget {
-  const NewClass({super.key});
+import '../../../core/widget/custom_button.dart';
+import '../../../core/widget/custom_input.dart';
+
+class EditClassPage extends ConsumerStatefulWidget {
+  const EditClassPage(this.id, {super.key});
+  final String id;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _NewClassState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _EditClassPageState();
 }
 
-class _NewClassState extends ConsumerState<NewClass> {
+class _EditClassPageState extends ConsumerState<EditClassPage> {
   final _formKey = GlobalKey<FormState>();
+  @override
+  void initState() {
+   
+    super.initState();
+    
+   
+      // check if widget is build
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+         var classList = ref.watch(classProvider);
+        var classItem =
+            classList.where((element) => element.id == widget.id).firstOrNull;
+             if (classItem != null) {
+        ref.read(editClassProvider.notifier).setClass(classItem);
+             }
+      });
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     var styles = CustomStyles(context: context);
     var breakPoint = ResponsiveBreakpoints.of(context);
-    var classProvider = ref.watch(newClassProvider);
-    var notifier = ref.read(newClassProvider.notifier);
+    var editProvider = ref.watch(editClassProvider);
+    var notifier = ref.read(editClassProvider.notifier);
     return SizedBox(
       width: breakPoint.screenWidth,
       height: breakPoint.screenHeight,
@@ -61,7 +81,7 @@ class _NewClassState extends ConsumerState<NewClass> {
                   Row(
                     children: [
                       Text(
-                        'New Class',
+                        'Update Class',
                         style: styles.textStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -110,6 +130,8 @@ class _NewClassState extends ConsumerState<NewClass> {
                                         subtitle: CustomTextFields(
                                           max: 7,
                                           isCapitalized: true,
+                                          controller: TextEditingController(
+                                              text: editProvider.code),
                                           hintText: 'Enter Course Code',
                                           validator: (value) {
                                             if (value!.isEmpty) {
@@ -135,6 +157,8 @@ class _NewClassState extends ConsumerState<NewClass> {
                                                 tablet: 16)),
                                         subtitle: CustomTextFields(
                                           hintText: 'Enter Course Title',
+                                          controller: TextEditingController(
+                                              text: editProvider.name),
                                           validator: (value) {
                                             if (value!.isEmpty) {
                                               return 'Course title is required';
@@ -159,6 +183,7 @@ class _NewClassState extends ConsumerState<NewClass> {
                                                 desktop: 18,
                                                 tablet: 16)),
                                         subtitle: CustomDropDown(
+                                          value: editProvider.classDay,
                                           items: [
                                             'Monday',
                                             'Tuesday',
@@ -199,6 +224,7 @@ class _NewClassState extends ConsumerState<NewClass> {
                                                       desktop: 18,
                                                       tablet: 16)),
                                               subtitle: CustomDropDown(
+                                                value: editProvider.startTime,
                                                 items: timeList
                                                     .map((e) =>
                                                         DropdownMenuItem(
@@ -223,7 +249,7 @@ class _NewClassState extends ConsumerState<NewClass> {
                                             ),
                                           ),
                                           const SizedBox(width: 5),
-                                          if (classProvider.startTime != null)
+                                          if (editProvider.startTime != null)
                                             Expanded(
                                               child: ListTile(
                                                 contentPadding: EdgeInsets.zero,
@@ -233,9 +259,10 @@ class _NewClassState extends ConsumerState<NewClass> {
                                                         desktop: 18,
                                                         tablet: 16)),
                                                 subtitle: CustomDropDown(
+                                                  value: editProvider.endTime,
                                                   items: timeList
                                                       .sublist(timeList.indexOf(
-                                                              classProvider
+                                                              editProvider
                                                                   .startTime!) +
                                                           1)
                                                       .map((e) =>
@@ -284,10 +311,10 @@ class _NewClassState extends ConsumerState<NewClass> {
                                               child: Row(
                                                 children: [
                                                   Checkbox(
-                                                      value: classProvider
+                                                      value: editProvider
                                                                   .availableToDepartments !=
                                                               null &&
-                                                          classProvider
+                                                          editProvider
                                                               .availableToDepartments!
                                                               .contains(e),
                                                       onChanged: (value) {
@@ -343,10 +370,10 @@ class _NewClassState extends ConsumerState<NewClass> {
                                                 child: Row(
                                                   children: [
                                                     Checkbox(
-                                                        value: classProvider
+                                                        value: editProvider
                                                                     .availableToLevels !=
                                                                 null &&
-                                                            classProvider
+                                                            editProvider
                                                                 .availableToLevels!
                                                                 .contains(e),
                                                         onChanged: (value) {
@@ -388,7 +415,7 @@ class _NewClassState extends ConsumerState<NewClass> {
                                             Radio(
                                               value: 'Public',
                                               groupValue:
-                                                  classProvider.classType,
+                                                  editProvider.classType,
                                               onChanged: (value) {
                                                 notifier.setClassType(
                                                     value.toString());
@@ -403,7 +430,7 @@ class _NewClassState extends ConsumerState<NewClass> {
                                             Radio(
                                               value: 'Private',
                                               groupValue:
-                                                  classProvider.classType,
+                                                  editProvider.classType,
                                               onChanged: (value) {
                                                 notifier.setClassType(
                                                     value.toString());
@@ -429,12 +456,12 @@ class _NewClassState extends ConsumerState<NewClass> {
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: CustomButton(
-                                          text: 'Create Class',
+                                          text: 'Update Class',
                                           onPressed: () {
                                             if (_formKey.currentState!
                                                 .validate()) {
                                               _formKey.currentState!.save();
-                                              notifier.createClass(
+                                              notifier.updateClass(
                                                   context: context, ref: ref);
                                             }
                                           }),

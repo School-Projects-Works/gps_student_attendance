@@ -1,4 +1,4 @@
-List<String> departmentList = [
+const List<String> departmentList = [
   'Information Technology Edu',
   'Mathematics Edu',
   'Accounting Studies',

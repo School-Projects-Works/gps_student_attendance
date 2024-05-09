@@ -4,8 +4,8 @@ import 'package:gps_student_attendance/features/class/data/class_model.dart';
 import 'package:gps_student_attendance/features/class/services/class_services.dart';
 import '../../auth/data/user_model.dart';
 
-final classesStreamProvider =
-    StreamProvider.autoDispose.family<List<ClassModel>,String>((ref,query) async* {
+final classesStreamProvider = StreamProvider.autoDispose
+    .family<List<ClassModel>, String>((ref, query) async* {
   final classesSnap = ClassServices.getClasses(query);
   await for (final classes in classesSnap) {
     var list = classes.docs.map((e) => ClassModel.fromMap(e.data())).toList();
@@ -34,8 +34,18 @@ class ClassProvider extends StateNotifier<List<ClassModel>> {
     state = state.map((e) => e.id == classModel.id ? classModel : e).toList();
   }
 
-  void deleteClass(String id) {
+  void deleteClass(String id) async {
+    CustomDialog.dismiss();
+    CustomDialog.showLoading(message: 'Deleting Class.....');
+   var status = await ClassServices.deleteClass(id);
+    if (!status) {
+      CustomDialog.dismiss();
+      CustomDialog.showError(message: 'Failed to delete class');
+      return;
+    }
     state = state.where((e) => e.id != id).toList();
+    CustomDialog.dismiss();
+    CustomDialog.showToast(message: 'Class Deleted Successfully');
   }
 }
 
@@ -62,6 +72,12 @@ class JoinClass extends StateNotifier<void> {
       required Users users,
       required WidgetRef ref}) async {
     CustomDialog.showLoading(message: 'Joining Class.....');
+    //check if class status is not closed
+    if (classModel.status == 'Closed') {
+      CustomDialog.dismiss();
+      CustomDialog.showError(message: 'Class is closed, Contact Lecturer');
+      return;
+    }
     //check if user is already in class
     if (classModel.studentIds.contains(users.id)) {
       CustomDialog.dismiss();
@@ -69,17 +85,15 @@ class JoinClass extends StateNotifier<void> {
       return;
     }
     //check if class  department is all or equal to user department
-    if (classModel.availableToDepartment != 'All' &&
-        classModel.availableToDepartment != users.department) {
-           CustomDialog.dismiss();
+    if (!classModel.availableToDepartments!.contains(users.department)) {
+      CustomDialog.dismiss();
       CustomDialog.showError(
           message: 'This class is not available to your department');
       return;
     }
     //check if class level is all or equal to user level
-    if (classModel.availableToLevel != 'All' &&
-        classModel.availableToLevel != users.level) {
-           CustomDialog.dismiss();
+    if (!classModel.availableToLevels!.contains(users.level)) {
+      CustomDialog.dismiss();
       CustomDialog.showError(
           message: 'This class is not available to your level');
       return;
@@ -90,13 +104,26 @@ class JoinClass extends StateNotifier<void> {
     if (classModel.classType!.toLowerCase() != 'public') {
       await ClassServices.updateClass(classModel);
       //check if user id is equal to lecturer id
-      CustomDialog.showSuccess(message: 'You have successfully joined class, Pending approval from lecturer');
-    }else{
-      //add student map to class students 
+      CustomDialog.showSuccess(
+          message:
+              'You have successfully joined class, Pending approval from lecturer');
+    } else {
+      //add student map to class students
       classModel.students.add(users.toMap());
       //update class
       await ClassServices.updateClass(classModel);
       CustomDialog.showSuccess(message: 'You have successfully joined class');
     }
+  }
+}
+
+final selectedClassProvider =
+    StateNotifierProvider<SelectedClass, ClassModel?>((ref) => SelectedClass());
+
+class SelectedClass extends StateNotifier<ClassModel?> {
+  SelectedClass() : super(null);
+
+  void setSelectedClass(ClassModel classModel) {
+    state = classModel;
   }
 }

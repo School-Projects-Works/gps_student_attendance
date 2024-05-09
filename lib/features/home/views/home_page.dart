@@ -4,6 +4,7 @@ import 'package:gps_student_attendance/config/router/router_info.dart';
 import 'package:gps_student_attendance/core/functions/navigation.dart';
 import 'package:gps_student_attendance/core/widget/custom_button.dart';
 import 'package:gps_student_attendance/core/widget/custom_dialog.dart';
+import 'package:gps_student_attendance/features/attendance/provider/attendance_provider.dart';
 import 'package:gps_student_attendance/features/auth/provider/login_provider.dart';
 import 'package:gps_student_attendance/features/class/provider/classes_provider.dart';
 import 'package:gps_student_attendance/features/home/views/components/class_card.dart';
@@ -90,121 +91,158 @@ class HomePage extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (breakPiont.largerThan(TABLET))
-                Column(
-                  children: [
-                    Container(
-                      width: 400,
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(vertical: 30),
-                      decoration: BoxDecoration(
-                        color: secondaryColor,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Text('My Attendance'.toUpperCase(),
-                          style: styles.textStyle(
-                              color: Colors.white,
-                              mobile: 22,
-                              tablet: 25,
-                              fontWeight: FontWeight.bold,
-                              desktop: 30)),
-                    ),
-                    Container(
-                        width: 400,
-                        padding: const EdgeInsets.symmetric(vertical: 40),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            ListView.separated(
-                                separatorBuilder: (context, index) =>
-                                    const Divider(),
-                                shrinkWrap: true,
-                                itemCount: 5,
-                                itemBuilder: (context, index) {
-                                  return ListTile(
-                                      title: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Class Code: Class Name',
-                                            style: styles.textStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: primaryColor,
-                                                desktop: 22,
-                                                mobile: 18),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {},
-                                            child: Text(
-                                              'View all',
-                                              style: styles.textStyle(
-                                                  color: secondaryColor,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      subtitle: Text([
-                                        '5181040189',
-                                        '5181040189',
-                                        '5181040189',
-                                        '5181040189',
-                                        '5181040189'
-                                      ].join(',')));
-                                }),
-                            const Divider(
-                              height: 10,
-                              color: secondaryColor,
-                            ),
-                            CustomButton(
-                                text: 'Start Attendance', onPressed: () {})
-                          ],
-                        ))
-                  ],
+                Padding(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: _buildSideList(ref: ref, context: context),
                 ),
-              const SizedBox(width: 20),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
-                        alignment: WrapAlignment.start,
-                        runAlignment: WrapAlignment.start,
-                        children: classList.map((e) => ClassCard(e)).toList(),
+                child: classList.isNotEmpty
+                    ? SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              alignment: WrapAlignment.start,
+                              runAlignment: WrapAlignment.start,
+                              children:
+                                  classList.map((e) => ClassCard(e)).toList(),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Center(
+                        child: Text('You do not have any class yet',
+                            style: styles.textStyle()),
                       ),
-                    ],
-                  ),
-                ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSideList(
+      {required WidgetRef ref, required BuildContext context}) {
+    var classList = ref.watch(classProvider);
+    var user = ref.watch(userProvider);
+    var breakPiont = ResponsiveBreakpoints.of(context);
+    var styles = CustomStyles(context: context);
+    var attendanceList = ref.watch(attendanceByStudentsAllClassStream);
+    if (user.userType == 'Lecturer') {
+      attendanceList = ref.watch(attendanceByLecturerStream(user.id!));
+    }
+    return Column(
+      children: [
+        Container(
+          width: 400,
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(vertical: 30),
+          decoration: BoxDecoration(
+            color: secondaryColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Text('My Attendance'.toUpperCase(),
+              style: styles.textStyle(
+                  color: Colors.white,
+                  mobile: 22,
+                  tablet: 25,
+                  fontWeight: FontWeight.bold,
+                  desktop: 30)),
+        ),
+        Container(
+            width: 400,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                attendanceList.when(data: (data) {
+                  if (data.isEmpty) {
+                    return const Center(
+                        child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 40),
+                      child: Text(
+                        'No attendance yet',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ));
+                  }
+                  return ListView.separated(
+                      separatorBuilder: (context, index) => const Divider(),
+                      shrinkWrap: true,
+                      itemCount: 5,
+                      itemBuilder: (context, index) {
+                        var attendance = data[index];
+                        return ListTile(
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '${attendance.classCode} - ${attendance.className}',
+                                  style: styles.textStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: primaryColor,
+                                      desktop: 22,
+                                      mobile: 18),
+                                ),
+                                TextButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    'View all',
+                                    style: styles.textStyle(
+                                        color: secondaryColor,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                )
+                              ],
+                            ),
+                            subtitle:Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [],)
+                            );
+                      });
+                }, error: (error, stack) {
+                  return const Center(
+                      child: Text(
+                    'Error loading data',
+                    style: TextStyle(color: Colors.red),
+                  ));
+                }, loading: () {
+                  return const Center(child: CircularProgressIndicator());
+                }),
+                const Divider(
+                  height: 25,
+                  color: secondaryColor,
+                ),
+                if (user.userType == 'Lecturer')
+                  CustomButton(text: 'Start Attendance', onPressed: () {})
+              ],
+            ))
+      ],
     );
   }
 }

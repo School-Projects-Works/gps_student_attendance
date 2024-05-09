@@ -7,10 +7,9 @@ class ClassModel {
   String id;
   String name;
   String code;
-  String description;
   String? color;
-  String? availableToDepartment;
-  String? availableToLevel;
+  List<String>? availableToDepartments;
+  List<String>? availableToLevels;
   String? classType;
   String lecturerId;
   String lecturerName;
@@ -28,10 +27,9 @@ class ClassModel {
     required this.id,
     required this.name,
     required this.code,
-    required this.description,
     this.color,
-    this.availableToDepartment,
-    this.availableToLevel,
+    this.availableToDepartments,
+    this.availableToLevels,
     this.classType,
     required this.lecturerId,
     required this.lecturerName,
@@ -51,10 +49,9 @@ class ClassModel {
     String? id,
     String? name,
     String? code,
-    String? description,
     ValueGetter<String?>? color,
-    ValueGetter<String?>? availableToDepartment,
-    ValueGetter<String?>? availableToLevel,
+    ValueGetter<List<String>?>? availableToDepartments,
+    ValueGetter<List<String>?>? availableToLevels,
     ValueGetter<String?>? classType,
     String? lecturerId,
     String? lecturerName,
@@ -73,10 +70,9 @@ class ClassModel {
       id: id ?? this.id,
       name: name ?? this.name,
       code: code ?? this.code,
-      description: description ?? this.description,
       color: color != null ? color() : this.color,
-      availableToDepartment: availableToDepartment != null ? availableToDepartment() : this.availableToDepartment,
-      availableToLevel: availableToLevel != null ? availableToLevel() : this.availableToLevel,
+      availableToDepartments: availableToDepartments != null ? availableToDepartments() : this.availableToDepartments,
+      availableToLevels: availableToLevels != null ? availableToLevels() : this.availableToLevels,
       classType: classType != null ? classType() : this.classType,
       lecturerId: lecturerId ?? this.lecturerId,
       lecturerName: lecturerName ?? this.lecturerName,
@@ -98,10 +94,9 @@ class ClassModel {
       'id': id,
       'name': name,
       'code': code,
-      'description': description,
       'color': color,
-      'availableToDepartment': availableToDepartment,
-      'availableToLevel': availableToLevel,
+      'availableToDepartments': availableToDepartments,
+      'availableToLevels': availableToLevels,
       'classType': classType,
       'lecturerId': lecturerId,
       'lecturerName': lecturerName,
@@ -123,10 +118,9 @@ class ClassModel {
       id: map['id'] ?? '',
       name: map['name'] ?? '',
       code: map['code'] ?? '',
-      description: map['description'] ?? '',
       color: map['color'],
-      availableToDepartment: map['availableToDepartment'],
-      availableToLevel: map['availableToLevel'],
+      availableToDepartments: List<String>.from(map['availableToDepartments']),
+      availableToLevels: List<String>.from(map['availableToLevels']),
       classType: map['classType'],
       lecturerId: map['lecturerId'] ?? '',
       lecturerName: map['lecturerName'] ?? '',
@@ -150,7 +144,7 @@ class ClassModel {
 
   @override
   String toString() {
-    return 'ClassModel(id: $id, name: $name, code: $code, description: $description, color: $color, availableToDepartment: $availableToDepartment, availableToLevel: $availableToLevel, classType: $classType, lecturerId: $lecturerId, lecturerName: $lecturerName, lecturerImage: $lecturerImage, studentIds: $studentIds, classDay: $classDay, status: $status, startTime: $startTime, endTime: $endTime, lat: $lat, long: $long, createdAt: $createdAt, students: $students)';
+    return 'ClassModel(id: $id, name: $name, code: $code, color: $color, availableToDepartments: $availableToDepartments, availableToLevels: $availableToLevels, classType: $classType, lecturerId: $lecturerId, lecturerName: $lecturerName, lecturerImage: $lecturerImage, studentIds: $studentIds, classDay: $classDay, status: $status, startTime: $startTime, endTime: $endTime, lat: $lat, long: $long, createdAt: $createdAt, students: $students)';
   }
 
   @override
@@ -161,10 +155,9 @@ class ClassModel {
       other.id == id &&
       other.name == name &&
       other.code == code &&
-      other.description == description &&
       other.color == color &&
-      other.availableToDepartment == availableToDepartment &&
-      other.availableToLevel == availableToLevel &&
+      listEquals(other.availableToDepartments, availableToDepartments) &&
+      listEquals(other.availableToLevels, availableToLevels) &&
       other.classType == classType &&
       other.lecturerId == lecturerId &&
       other.lecturerName == lecturerName &&
@@ -185,10 +178,9 @@ class ClassModel {
     return id.hashCode ^
       name.hashCode ^
       code.hashCode ^
-      description.hashCode ^
       color.hashCode ^
-      availableToDepartment.hashCode ^
-      availableToLevel.hashCode ^
+      availableToDepartments.hashCode ^
+      availableToLevels.hashCode ^
       classType.hashCode ^
       lecturerId.hashCode ^
       lecturerName.hashCode ^
@@ -245,7 +237,7 @@ class ClassModel {
         id: faker.guid.guid(),
         name: classInfo[i]['classTitle']!,
         code: classInfo[i]['className']!,
-        description: faker.lorem.sentence(),
+      
         lecturerId: 'Lecturer $i',
         lecturerName: faker.person.name(),
         color: faker.randomGenerator.element(colorsList),

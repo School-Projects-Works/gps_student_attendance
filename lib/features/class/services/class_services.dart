@@ -22,13 +22,27 @@ class ClassServices {
     }
   }
 
-  static Future<void> updateClass(ClassModel classModel) async {
+  static Future<bool> updateClass(ClassModel classModel) async {
     // Update a class
-    var data = classModel.toMap();
+    try{
+      var data = classModel.toMap();
     await firestore.collection('classes').doc(classModel.id).update(data);
+    return true;
+    }catch(e){
+      print(e);
+      return false;
+    }
   }
 
-  static Future<void> deleteClass() async {
+  static Future<bool> deleteClass(String id) async {
+    try{
+      // Delete a class
+      await firestore.collection('classes').doc(id).delete();
+      return true;
+    }catch(e){
+      print(e);
+      return false;
+    }
     // Delete a class
   }
 
