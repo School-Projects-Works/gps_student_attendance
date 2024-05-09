@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -6,6 +9,7 @@ import 'package:gps_student_attendance/config/router/router.dart';
 import 'package:gps_student_attendance/firebase_options.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:url_strategy/url_strategy.dart';
 
@@ -19,7 +23,18 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  //initialize hive
+  //get app directory
+if(!kIsWeb) {
+  final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
+  var path = '${appDocumentsDir.path}/db';
+   Hive.init(path);
+}
+
+
+  
   await Hive.openBox('user');
+  await Hive.openBox('route');
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -37,7 +52,7 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
       ),
       builder: FlutterSmartDialog.init(builder: (context, child) {
-        var userStream = ref.watch(loginProviderStream);
+        // var userStream = ref.watch(loginProviderStream);
         var widget = ResponsiveBreakpoints.builder(
           child: child!,
           breakpoints: [
@@ -47,16 +62,7 @@ class MyApp extends ConsumerWidget {
             const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
           ],
         );
-       return userStream.when(
-            data: (data){
-              return widget;
-            },
-            error: (error, stack){
-              return widget;
-            },
-            loading: () {
-              return widget;
-            });
+       return widget;
       }),
       routerConfig: router(ref),
     );

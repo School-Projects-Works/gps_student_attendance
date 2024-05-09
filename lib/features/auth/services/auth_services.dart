@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gps_student_attendance/features/auth/data/user_model.dart';
 import 'package:hive/hive.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AuthServices {
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
   static FirebaseAuth auth = FirebaseAuth.instance;
+  static FirebaseStorage storage = FirebaseStorage.instance;
 
   static Future<(bool, String)> createUser(Users user) async {
     // create user
@@ -55,7 +58,8 @@ class AuthServices {
         return ('No user found for that email.', null);
       } else if (e.code == 'wrong-password') {
         return ('Wrong password provided for that user.', null);
-      }else if(e.toString().contains('invalid')||e.toString().contains('incorrect')){
+      } else if (e.toString().contains('invalid') ||
+          e.toString().contains('incorrect')) {
         return ('No user found for that email.', null);
       }
       return (e.toString(), null);
@@ -102,7 +106,7 @@ class AuthServices {
     await users.doc(user.id).set(user.toMap());
   }
 
-  static Future<List<Users>> getUsers()async {
+  static Future<List<Users>> getUsers() async {
     var users = await firestore.collection('users').get();
     return users.docs.map((e) => Users.fromMap(e.data())).toList();
   }
@@ -110,5 +114,18 @@ class AuthServices {
   static Future<void> updateUserData(Users user) async {
     CollectionReference users = firestore.collection('users');
     await users.doc(user.id).update(user.toMap());
+  }
+
+  static Future<(String, String?)> uploadImage(
+      XFile userProfile, String userId) async {
+    try {
+      var ref = storage.ref('profile_images').child('$userId.jpeg');
+      var data = await userProfile.readAsBytes();
+      await ref.putData(data, SettableMetadata(contentType: 'image/jpeg'));
+      var url = await ref.getDownloadURL();
+      return ('Image uploaded successfully', url);
+    } catch (e) {
+      return ('Error uploading image', null);
+    }
   }
 }

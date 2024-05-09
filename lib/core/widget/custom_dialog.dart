@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
 
-
 enum ToastType { success, error, warning, info }
 
 // ignore_for_file: file_names
@@ -27,7 +26,7 @@ class CustomDialog {
     SmartDialog.show(
       maskColor: Colors.transparent,
       builder: (context) {
-       var styles = CustomStyles(context: context);
+        var styles = CustomStyles(context: context);
         return Container(
           width: 450,
           height: 250,
@@ -97,7 +96,6 @@ class CustomDialog {
   }
 
   static void showSuccess({required String message}) {
-    
     SmartDialog.show(
       maskColor: Colors.transparent,
       builder: (_) {
@@ -296,13 +294,14 @@ class CustomDialog {
       {required Widget ui,
       SmartDialogController? controller,
       double? width,
+      bool clickMaskDismiss = false,
       double? height}) async {
     SmartDialog.show(
       alignment: Alignment.center,
       animationType: SmartAnimationType.centerScale_otherSlide,
       permanent: false,
       useAnimation: true,
-      clickMaskDismiss: false,
+      clickMaskDismiss: clickMaskDismiss,
       controller: controller,
       maskColor: Colors.transparent,
       builder: (_) {

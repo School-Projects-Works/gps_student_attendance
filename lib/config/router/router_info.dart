@@ -13,4 +13,7 @@ class RouterInfo {
       RouterInfo(name: 'home', path: '/home');
 
       static RouterInfo profileRoute = RouterInfo(name: 'profile', path: '/profile');
+
+
+  static RouterInfo newClassRoute = RouterInfo(name: 'new-class', path: '/new-class');
 }

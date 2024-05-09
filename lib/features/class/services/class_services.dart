@@ -7,8 +7,16 @@ class ClassServices {
     try {
       // Create a class
       CollectionReference coll = firestore.collection('classes');
-      await coll.add(data.toMap());
-      return (true, 'Class created');
+      var id = coll.doc().id;
+      data.id = id;
+      //save if class code does not exist
+      var existence = await coll.where('code', isEqualTo: data.code).get();
+      if (existence.docs.isNotEmpty) {
+        return (false, 'Class code exists');
+      }
+
+      await coll.doc(data.id).set(data.toMap());
+      return (true, 'Class created successfully');
     } catch (e) {
       return (false, e.toString());
     }
@@ -28,11 +36,31 @@ class ClassServices {
     // Get a class
   }
 
-  static Future<List<ClassModel>> getClasses() async {
+  static Stream<QuerySnapshot<Map<String,dynamic>>> getClasses(String query) {
     // Get all classes
-    var data = await firestore.collection('classes').get();
-    var listOfData =
-        data.docs.map((e) => ClassModel.fromMap(e.data())).toList();
-    return listOfData;
+    if(query.isEmpty||query.toLowerCase()=='all') {
+      return firestore.collection('classes').snapshots();
+    }else{
+      return firestore.collection('classes').where('lecturerId',isEqualTo: query).snapshots();
+    }
   }
+
+  // static Future<(bool, String)> checkClassCode(String code) async {
+  //   // Check if class code exists
+  //   try {
+  //     var data = await firestore
+  //         .collection('classes')
+  //         .where('code', isEqualTo: code)
+  //         .get();
+  //     //var data = await firestore.collection('classes').get();
+  //     // var foundData = data.docs.where((element) => element.data()['code'] == code).toList();
+  //     if (data.docs.isNotEmpty) {
+  //       return (true, 'Class code exists');
+  //     } else {
+  //       return (false, 'Class code does not exist');
+  //     }
+  //   } catch (e) {
+  //     return (false, e.toString());
+  //   }
+  // }
 }

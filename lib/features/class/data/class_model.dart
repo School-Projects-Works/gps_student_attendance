@@ -1,10 +1,7 @@
 import 'dart:convert';
-
 import 'package:faker/faker.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:gps_student_attendance/core/constants/colors_list.dart';
-import 'package:gps_student_attendance/core/constants/departments.dart';
 
 class ClassModel {
   String id;
@@ -12,14 +9,19 @@ class ClassModel {
   String code;
   String description;
   String? color;
-  String? department;
+  String? availableToDepartment;
+  String? availableToLevel;
+  String? classType;
   String lecturerId;
   String lecturerName;
   String? lecturerImage;
-  List<String> availableTo;
   List<String> studentIds;
   String? classDay;
   String? status;
+  String? startTime;
+  String? endTime;
+  double? lat;
+  double? long;
   int? createdAt;
   List<Map<String, dynamic>> students;
   ClassModel({
@@ -28,12 +30,19 @@ class ClassModel {
     required this.code,
     required this.description,
     this.color,
-    this.department,
+    this.availableToDepartment,
+    this.availableToLevel,
+    this.classType,
     required this.lecturerId,
     required this.lecturerName,
     this.lecturerImage,
-    this.availableTo = const [],
     this.studentIds = const [],
+    this.classDay,
+    this.status,
+    this.startTime,
+    this.endTime,
+    this.lat,
+    this.long,
     this.createdAt,
     this.students = const [],
   });
@@ -44,12 +53,19 @@ class ClassModel {
     String? code,
     String? description,
     ValueGetter<String?>? color,
-    ValueGetter<String?>? department,
+    ValueGetter<String?>? availableToDepartment,
+    ValueGetter<String?>? availableToLevel,
+    ValueGetter<String?>? classType,
     String? lecturerId,
     String? lecturerName,
     ValueGetter<String?>? lecturerImage,
-    List<String>? availableTo,
     List<String>? studentIds,
+    ValueGetter<String?>? classDay,
+    ValueGetter<String?>? status,
+    ValueGetter<String?>? startTime,
+    ValueGetter<String?>? endTime,
+    ValueGetter<double?>? lat,
+    ValueGetter<double?>? long,
     ValueGetter<int?>? createdAt,
     List<Map<String, dynamic>>? students,
   }) {
@@ -59,13 +75,19 @@ class ClassModel {
       code: code ?? this.code,
       description: description ?? this.description,
       color: color != null ? color() : this.color,
-      department: department != null ? department() : this.department,
+      availableToDepartment: availableToDepartment != null ? availableToDepartment() : this.availableToDepartment,
+      availableToLevel: availableToLevel != null ? availableToLevel() : this.availableToLevel,
+      classType: classType != null ? classType() : this.classType,
       lecturerId: lecturerId ?? this.lecturerId,
       lecturerName: lecturerName ?? this.lecturerName,
-      lecturerImage:
-          lecturerImage != null ? lecturerImage() : this.lecturerImage,
-      availableTo: availableTo ?? this.availableTo,
+      lecturerImage: lecturerImage != null ? lecturerImage() : this.lecturerImage,
       studentIds: studentIds ?? this.studentIds,
+      classDay: classDay != null ? classDay() : this.classDay,
+      status: status != null ? status() : this.status,
+      startTime: startTime != null ? startTime() : this.startTime,
+      endTime: endTime != null ? endTime() : this.endTime,
+      lat: lat != null ? lat() : this.lat,
+      long: long != null ? long() : this.long,
       createdAt: createdAt != null ? createdAt() : this.createdAt,
       students: students ?? this.students,
     );
@@ -78,12 +100,19 @@ class ClassModel {
       'code': code,
       'description': description,
       'color': color,
-      'department': department,
+      'availableToDepartment': availableToDepartment,
+      'availableToLevel': availableToLevel,
+      'classType': classType,
       'lecturerId': lecturerId,
       'lecturerName': lecturerName,
       'lecturerImage': lecturerImage,
-      'availableTo': availableTo,
       'studentIds': studentIds,
+      'classDay': classDay,
+      'status': status,
+      'startTime': startTime,
+      'endTime': endTime,
+      'lat': lat,
+      'long': long,
       'createdAt': createdAt,
       'students': students,
     };
@@ -96,14 +125,21 @@ class ClassModel {
       code: map['code'] ?? '',
       description: map['description'] ?? '',
       color: map['color'],
-      department: map['department'],
+      availableToDepartment: map['availableToDepartment'],
+      availableToLevel: map['availableToLevel'],
+      classType: map['classType'],
       lecturerId: map['lecturerId'] ?? '',
       lecturerName: map['lecturerName'] ?? '',
       lecturerImage: map['lecturerImage'],
-      availableTo: List<String>.from(map['availableTo']),
       studentIds: List<String>.from(map['studentIds']),
+      classDay: map['classDay'],
+      status: map['status'],
+      startTime: map['startTime'],
+      endTime: map['endTime'],
+      lat: map['lat']?.toDouble(),
+      long: map['long']?.toDouble(),
       createdAt: map['createdAt']?.toInt(),
-      students: List<Map<String, dynamic>>.from(map['students']?.map((x) => x)),
+      students: List<Map<String, dynamic>>.from(map['students']?.map((x) => Map<String, dynamic>.from(x))),
     );
   }
 
@@ -114,44 +150,58 @@ class ClassModel {
 
   @override
   String toString() {
-    return 'ClassModel(id: $id, name: $name, code: $code, description: $description, color: $color, department: $department, lecturerId: $lecturerId, lecturerName: $lecturerName, lecturerImage: $lecturerImage, availableTo: $availableTo, studentIds: $studentIds, createdAt: $createdAt, students: $students)';
+    return 'ClassModel(id: $id, name: $name, code: $code, description: $description, color: $color, availableToDepartment: $availableToDepartment, availableToLevel: $availableToLevel, classType: $classType, lecturerId: $lecturerId, lecturerName: $lecturerName, lecturerImage: $lecturerImage, studentIds: $studentIds, classDay: $classDay, status: $status, startTime: $startTime, endTime: $endTime, lat: $lat, long: $long, createdAt: $createdAt, students: $students)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-
+  
     return other is ClassModel &&
-        other.id == id &&
-        other.name == name &&
-        other.code == code &&
-        other.description == description &&
-        other.color == color &&
-        other.department == department &&
-        other.lecturerId == lecturerId &&
-        other.lecturerName == lecturerName &&
-        other.lecturerImage == lecturerImage &&
-        listEquals(other.availableTo, availableTo) &&
-        listEquals(other.studentIds, studentIds) &&
-        other.createdAt == createdAt &&
-        listEquals(other.students, students);
+      other.id == id &&
+      other.name == name &&
+      other.code == code &&
+      other.description == description &&
+      other.color == color &&
+      other.availableToDepartment == availableToDepartment &&
+      other.availableToLevel == availableToLevel &&
+      other.classType == classType &&
+      other.lecturerId == lecturerId &&
+      other.lecturerName == lecturerName &&
+      other.lecturerImage == lecturerImage &&
+      listEquals(other.studentIds, studentIds) &&
+      other.classDay == classDay &&
+      other.status == status &&
+      other.startTime == startTime &&
+      other.endTime == endTime &&
+      other.lat == lat &&
+      other.long == long &&
+      other.createdAt == createdAt &&
+      listEquals(other.students, students);
   }
 
   @override
   int get hashCode {
     return id.hashCode ^
-        name.hashCode ^
-        code.hashCode ^
-        description.hashCode ^
-        color.hashCode ^
-        department.hashCode ^
-        lecturerId.hashCode ^
-        lecturerName.hashCode ^
-        lecturerImage.hashCode ^
-        availableTo.hashCode ^
-        studentIds.hashCode ^
-        createdAt.hashCode ^
-        students.hashCode;
+      name.hashCode ^
+      code.hashCode ^
+      description.hashCode ^
+      color.hashCode ^
+      availableToDepartment.hashCode ^
+      availableToLevel.hashCode ^
+      classType.hashCode ^
+      lecturerId.hashCode ^
+      lecturerName.hashCode ^
+      lecturerImage.hashCode ^
+      studentIds.hashCode ^
+      classDay.hashCode ^
+      status.hashCode ^
+      startTime.hashCode ^
+      endTime.hashCode ^
+      lat.hashCode ^
+      long.hashCode ^
+      createdAt.hashCode ^
+      students.hashCode;
   }
 
   static List<ClassModel> dummyClassList() {
@@ -192,21 +242,15 @@ class ClassModel {
     final faker = Faker();
     for (int i = 0; i < classInfo.length; i++) {
       data.add(ClassModel(
-          id: faker.guid.guid(),
-          name: classInfo[i]['classTitle']!,
-          code: classInfo[i]['className']!,
-          description: faker.lorem.sentence(),
-          lecturerId: 'Lecturer $i',
-          lecturerName: faker.person.name(),
-          color: faker.randomGenerator.element(colorsList),
-          availableTo: faker.randomGenerator.boolean()
-              ? ['All']
-              : faker.randomGenerator
-                  .numbers(departmentList.length - 1, 2)
-                  .map((e) => departmentList[e])
-                  .toList(),
-          createdAt: faker.date.dateTime().millisecondsSinceEpoch,
-          department: faker.randomGenerator.element(departmentList)));
+        id: faker.guid.guid(),
+        name: classInfo[i]['classTitle']!,
+        code: classInfo[i]['className']!,
+        description: faker.lorem.sentence(),
+        lecturerId: 'Lecturer $i',
+        lecturerName: faker.person.name(),
+        color: faker.randomGenerator.element(colorsList),
+        createdAt: faker.date.dateTime().millisecondsSinceEpoch,
+      ));
     }
     return data;
   }

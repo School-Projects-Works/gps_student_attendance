@@ -6,10 +6,12 @@ import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../../auth/provider/login_provider.dart';
+import '../../../class/provider/classes_provider.dart';
 
 class ClassCard extends ConsumerStatefulWidget {
-  const ClassCard(this.classModel, {super.key});
+  const ClassCard(this.classModel, {super.key, this.hasJoin = false});
   final ClassModel classModel;
+  final bool hasJoin;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ClassCardState();
@@ -33,9 +35,9 @@ class _ClassCardState extends ConsumerState<ClassCard> {
           });
         },
         child: Card(
-            elevation: _hover ? 6 : 1,
+            elevation: _hover ? 10 : 6,
             child: Container(
-              width: pointBreaker.isMobile ? pointBreaker.screenWidth : 300,
+              width: pointBreaker.isMobile ? pointBreaker.screenWidth : 350,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -126,17 +128,17 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                         ),
                         // const SizedBox(height: 5),
                         //description
-                        Text(
-                          widget.classModel.description,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: styles.textStyle(
-                              color: Colors.white,
-                              fontFamily: 'OpenSans',
-                              fontWeight: FontWeight.w400,
-                              desktop: 13),
-                        ),
-                        const SizedBox(height: 12),
+                        // Text(
+                        //   widget.classModel.description,
+                        //   maxLines: 1,
+                        //   overflow: TextOverflow.ellipsis,
+                        //   style: styles.textStyle(
+                        //       color: Colors.white,
+                        //       fontFamily: 'OpenSans',
+                        //       fontWeight: FontWeight.w400,
+                        //       desktop: 13),
+                        // ),
+                        // const SizedBox(height: 12),
                         //lecturer,
                         Text(
                           widget.classModel.lecturerName,
@@ -145,7 +147,7 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                           style: styles.textStyle(
                               color: Colors.white,
                               fontFamily: 'OpenSans',
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w500,
                               desktop: 15),
                         ),
                       ],
@@ -165,7 +167,7 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                               Transform.translate(
                                 offset: const Offset(0, -27),
                                 child: CircleAvatar(
-                                    radius: 25,
+                                    radius: 20,
                                     backgroundColor: Colors.white,
                                     backgroundImage:
                                         widget.classModel.lecturerImage != null
@@ -200,13 +202,113 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 40),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Class Day:',
+                                style: styles.textStyle(color: secondaryColor),
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                widget.classModel.classDay ?? '',
+                                style: styles.textStyle(
+                                    color: widget.classModel.color!.toColor(),
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                        ),
+
+                        //class start and end time
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'Start At:',
+                                    style:
+                                        styles.textStyle(color: secondaryColor),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    widget.classModel.startTime ?? '',
+                                    style: styles.textStyle(
+                                        color:
+                                            widget.classModel.color!.toColor(),
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    'End At:',
+                                    style:
+                                        styles.textStyle(color: secondaryColor),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    widget.classModel.endTime ?? '',
+                                    style: styles.textStyle(
+                                        color:
+                                            widget.classModel.color!.toColor(),
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        // const Divider(
+                        //   color: Colors.black12,
+                        // ),
                         const Divider(),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 15, vertical: 10),
                           child: Row(
                             children: [
+                              if (widget.hasJoin)
+                                if (!widget.classModel.studentIds
+                                    .contains(user.id))
+                                  TextButton.icon(
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                widget.classModel.color!
+                                                    .toColor()),
+                                        shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        foregroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.white),
+                                      ),
+                                      onPressed: () {
+                                        //join class
+                                        ref
+                                            .read(joinClassProvider.notifier)
+                                            .joinClass(
+                                                classModel: widget.classModel,
+                                                users: user,
+                                                ref: ref);
+                                      },
+                                      icon: const Icon(
+                                        Icons.grass_rounded,
+                                        size: 18,
+                                      ),
+                                      label: const Text(
+                                        'Join Class',
+                                      )),
                               const Spacer(),
                               const Icon(Icons.school,
                                   color: Colors.black54, size: 20),
