@@ -1,13 +1,20 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gps_student_attendance/config/router/router_info.dart';
 import 'package:gps_student_attendance/core/functions/color_convertor.dart';
 import 'package:gps_student_attendance/core/functions/navigation.dart';
+import 'package:gps_student_attendance/core/functions/transparent_page.dart';
+import 'package:gps_student_attendance/core/widget/custom_button.dart';
 import 'package:gps_student_attendance/core/widget/custom_dialog.dart';
 import 'package:gps_student_attendance/features/attendance/data/attendance_model.dart';
 import 'package:gps_student_attendance/features/attendance/provider/atten_actions_provider.dart';
 import 'package:gps_student_attendance/features/attendance/provider/attendance_provider.dart';
+import 'package:gps_student_attendance/features/attendance/views/new_attendnace.dart';
+import 'package:gps_student_attendance/features/attendance/views/qr_widget.dart';
+import 'package:gps_student_attendance/features/auth/data/user_model.dart';
 import 'package:gps_student_attendance/features/class/data/class_model.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -67,6 +74,7 @@ class _ClassCardState extends ConsumerState<ClassCard> {
           .where((element) => element.status!.toLowerCase() == 'active')
           .toList();
     }
+    print('Active : ${activeAttendance.length}');
     return Card(
         elevation: _hover ? 10 : 6,
         child: Container(
@@ -107,102 +115,20 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                           ),
                         ),
                         const SizedBox(width: 10),
+                        if (user.userType != 'Lecturer' &&
+                            widget.classModel.studentIds.contains(user.id))
+                          _studentManu(
+                              user,
+                              activeAttendance.isNotEmpty
+                                  ? activeAttendance[0]
+                                  : null),
                         if (user.userType == 'Lecturer' &&
                             user.id == widget.classModel.lecturerId)
-                          //popup menu
-                          PopupMenuButton<int>(
-                            color: Colors.white,
-                            iconColor: Colors.white38,
-                            itemBuilder: (context) => [
-                              if (activeAttendance.isNotEmpty)
-                                const PopupMenuItem(
-                                  padding: EdgeInsets.only(right: 50, left: 20),
-                                  value: 0,
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.line_style_outlined),
-                                      SizedBox(width: 10),
-                                      Text('Close Attendance'),
-                                    ],
-                                  ),
-                                )
-                              else
-                                const PopupMenuItem(
-                                  padding: EdgeInsets.only(right: 50, left: 20),
-                                  value: 1,
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.list_alt_rounded),
-                                      SizedBox(width: 10),
-                                      Text('Start Attendance'),
-                                    ],
-                                  ),
-                                ),
-                              const PopupMenuItem(
-                                padding: EdgeInsets.only(right: 50, left: 20),
-                                value: 2,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.edit),
-                                    SizedBox(width: 10),
-                                    Text('Edit Class'),
-                                  ],
-                                ),
-                              ),
-                              const PopupMenuItem(
-                                padding: EdgeInsets.only(right: 50, left: 20),
-                                value: 3,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.delete),
-                                    SizedBox(width: 10),
-                                    Text('Delete'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            onSelected: (value) {
-                              switch (value) {
-                                case 0:
-                                  //close attendance
-                                  ref
-                                      .read(attendanceActionsProvider.notifier)
-                                      .closeAttendance(
-                                          attendance: activeAttendance[0],
-                                          classData: widget.classModel,
-                                          ref: ref);
-                                  break;
-                                case 1:
-                                  //start attendance
-                                  ref
-                                      .read(attendanceActionsProvider.notifier)
-                                      .startAttendance(
-                                          classModel: widget.classModel,
-                                          ref: ref);
-                                  break;
-                                case 2:
-                                  navigateToName(
-                                      context: context,
-                                      route: RouterInfo.editClassRoute,
-                                      parameter: {'id': widget.classModel.id});
-
-                                  break;
-                                case 3:
-                                  CustomDialog.showInfo(
-                                      message:
-                                          'Are you sure you want to delete this class?',
-                                      buttonText: 'Yes|Delete',
-                                      onPressed: () {
-                                        ref
-                                            .read(classProvider.notifier)
-                                            .deleteClass(widget.classModel.id);
-                                      });
-
-                                  break;
-                                default:
-                              }
-                            },
-                          )
+                          _lecturerManu(
+                              user,
+                              activeAttendance.isNotEmpty
+                                  ? activeAttendance[0]
+                                  : null),
                       ],
                     ),
                     Text(
@@ -267,17 +193,36 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Class Day:',
-                            style: styles.textStyle(color: secondaryColor),
+                          Row(
+                            children: [
+                              Text(
+                                'Class Day:',
+                                style: styles.textStyle(color: secondaryColor),
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                widget.classModel.classDay ?? '',
+                                style: styles.textStyle(
+                                    color: widget.classModel.color!.toColor(),
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
                           ),
-                          const SizedBox(width: 5),
-                          Text(
-                            widget.classModel.classDay ?? '',
-                            style: styles.textStyle(
-                                color: widget.classModel.color!.toColor(),
-                                fontWeight: FontWeight.bold),
+                          Row(
+                            children: [
+                              Text(
+                                'Venue: ',
+                                style: styles.textStyle(color: secondaryColor),
+                              ),
+                              Text(
+                                widget.classModel.classVenue ?? '',
+                                style: styles.textStyle(
+                                    color: widget.classModel.color!.toColor(),
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
                           )
                         ],
                       ),
@@ -331,6 +276,18 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                           horizontal: 15, vertical: 10),
                       child: Row(
                         children: [
+                          if (user.userType == 'Lecturer')
+                            _buildLecturerButtons(
+                                user,
+                                activeAttendance.isNotEmpty
+                                    ? activeAttendance[0]
+                                    : null),
+                          if (user.userType != 'Lecturer')
+                            _buildStudentManu(
+                                user,
+                                activeAttendance.isNotEmpty
+                                    ? activeAttendance[0]
+                                    : null),
                           if (widget.hasJoin)
                             if (!widget.classModel.studentIds.contains(user.id))
                               TextButton.icon(
@@ -363,40 +320,7 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                                   ),
                                   label: const Text(
                                     'Join Class',
-                                  ))
-                            else if (activeAttendance.isNotEmpty &&
-                                activeAttendance[0]
-                                    .studentIds!
-                                    .contains(user.id))
-                              Text(
-                                'You are in class Today',
-                                style: styles.textStyle(
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.bold),
-                              )
-                            else if (activeAttendance.isNotEmpty &&
-                                !activeAttendance[0]
-                                    .studentIds!
-                                    .contains(user.id))
-                              TextButton.icon(
-                                  onPressed: () {
-                                    //todo mark attendance
-                                    // ignore: prefer_const_constructors
-                                  },
-                                  icon: const Icon(Icons.check),
-                                  label: Text(
-                                    'Mark Attendance',
-                                    style: styles.textStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.bold),
-                                  ))
-                            else
-                              Text(
-                                'No Active Attendance',
-                                style: styles.textStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold),
-                              ),
+                                  )),
                           const Spacer(),
                           const Icon(Icons.school,
                               color: Colors.black54, size: 20),
@@ -418,5 +342,234 @@ class _ClassCardState extends ConsumerState<ClassCard> {
             ],
           ),
         ));
+  }
+
+  Widget _buildStudentManu(Users user, AttendanceModel? attendanceModel) {
+    print('Attendance Model: ${attendanceModel?.toMap()}');
+    var students =
+        widget.classModel.students.map((e) => Users.fromMap(e)).toList();
+    var studentFound =
+        students.where((element) => element.id == user.id).toList().isNotEmpty;
+    if (studentFound) {
+      if (attendanceModel != null &&
+          attendanceModel.studentIds.contains(user.id)) {
+        return const Text(
+          'You are in class Today',
+          style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+        );
+      }
+      if (attendanceModel != null &&
+          !attendanceModel.studentIds.contains(user.id)) {
+        return TextButton.icon(
+            onPressed: () {
+              ref.read(attendanceProvider.notifier).markAttendance(
+                  classModel: widget.classModel,
+                  attendance: attendanceModel,
+                  ref: ref);
+            },
+            icon: const Icon(Icons.check),
+            label: const Text(
+              'Mark Attendance',
+              style:
+                  TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+            ));
+      }
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildLecturerButtons(Users user, AttendanceModel? attendanceModel) {
+    if (attendanceModel != null) {
+      return TextButton.icon(
+          onPressed: () {
+            //Todo end attendance
+          },
+          icon: const Icon(Icons.cancel_presentation_rounded),
+          label: const Text('End Attendance'));
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _studentManu(Users user, AttendanceModel? attendanceModel) {
+    
+    return PopupMenuButton<int>(
+        color: Colors.white,
+        iconColor: Colors.white38,
+        itemBuilder: (context) {
+          var students =
+              widget.classModel.students.map((e) => Users.fromMap(e)).toList();
+          var studentFound = students
+              .where((element) => element.id == user.id)
+              .toList()
+              .isNotEmpty;
+          return [
+            if (studentFound)
+              const PopupMenuItem(
+                padding: EdgeInsets.only(right: 50, left: 20),
+                value: 0,
+                child: Row(
+                  children: [
+                    Icon(Icons.exit_to_app),
+                    SizedBox(width: 10),
+                    Text('Leave Class'),
+                  ],
+                ),
+              ),
+            if (studentFound && attendanceModel != null)
+              const PopupMenuItem(
+                padding: EdgeInsets.only(right: 50, left: 20),
+                value: 1,
+                child: Row(
+                  children: [
+                    Icon(Icons.list_alt_rounded),
+                    SizedBox(width: 10),
+                    Text('View Attendance'),
+                  ],
+                ),
+              ),
+          ];
+        },
+        onSelected: (value) {
+          switch (value) {
+            case 0:
+              //leave class
+              CustomDialog.showInfo(
+                  message: 'Are you sure you want to leave?',
+                  buttonText: 'Leave',
+                  onPressed: () {
+                    ref.read(joinClassProvider.notifier).leaveClass(
+                        classModel: widget.classModel, users: user, ref: ref);
+                  });
+
+              break;
+            case 1:
+              break;
+
+            default:
+              break;
+          }
+        });
+  }
+
+  Widget _lecturerManu(Users user, AttendanceModel? attendanceModel) {
+    return PopupMenuButton<int>(
+        color: Colors.white,
+        iconColor: Colors.white38,
+        itemBuilder: (context) => [
+              if (attendanceModel != null)
+                const PopupMenuItem(
+                  padding: EdgeInsets.only(right: 50, left: 20),
+                  value: 0,
+                  child: Row(
+                    children: [
+                      Icon(Icons.cancel_presentation_rounded),
+                      SizedBox(width: 10),
+                      Text('End Attendance'),
+                    ],
+                  ),
+                )
+              else
+                const PopupMenuItem(
+                  padding: EdgeInsets.only(right: 50, left: 20),
+                  value: 1,
+                  child: Row(
+                    children: [
+                      Icon(Icons.add_circle_rounded),
+                      SizedBox(width: 10),
+                      Text('Start Attendance'),
+                    ],
+                  ),
+                ),
+              if (attendanceModel != null)
+                const PopupMenuItem(
+                  padding: EdgeInsets.only(right: 50, left: 20),
+                  value: 2,
+                  child: Row(
+                    children: [
+                      Icon(Icons.add_circle_rounded),
+                      SizedBox(width: 10),
+                      Text('Get QR Code'),
+                    ],
+                  ),
+                ),
+              const PopupMenuItem(
+                padding: EdgeInsets.only(right: 50, left: 20),
+                value: 3,
+                child: Row(
+                  children: [
+                    Icon(Icons.list_alt_rounded),
+                    SizedBox(width: 10),
+                    Text('View Attendance'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                padding: EdgeInsets.only(right: 50, left: 20),
+                value: 4,
+                child: Row(
+                  children: [
+                    Icon(Icons.edit),
+                    SizedBox(width: 10),
+                    Text('Edit Class'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                padding: EdgeInsets.only(right: 50, left: 20),
+                value: 5,
+                child: Row(
+                  children: [
+                    Icon(Icons.delete),
+                    SizedBox(width: 10),
+                    Text('Delete'),
+                  ],
+                ),
+              ),
+            ],
+        onSelected: (value) {
+          switch (value) {
+            case 0:
+              //end attendance
+              break;
+            case 1:
+              if (widget.classModel.students.isNotEmpty) {
+                Navigator.of(context).push(TransparentRoute(
+                    builder: (BuildContext context) => const NewAttendance()));
+              } else {
+                CustomDialog.showError(
+                    message:
+                        'No student in this class yet, Please add student to this class');
+              }
+              break;
+            case 2:
+              Navigator.of(context).push(TransparentRoute(
+                  builder: (BuildContext context) =>
+                      QRWidget(id: attendanceModel!.id!)));
+              break;
+            case 3:
+              break;
+            case 4:
+              navigateToName(
+                  context: context,
+                  route: RouterInfo.editClassRoute,
+                  parameter: {'id': widget.classModel.id});
+
+              break;
+            case 5:
+              CustomDialog.showInfo(
+                  message: 'Are you sure you want to delete this class?',
+                  buttonText: 'Yes|Delete',
+                  onPressed: () {
+                    ref
+                        .read(classProvider.notifier)
+                        .deleteClass(widget.classModel.id);
+                  });
+
+              break;
+            default:
+              break;
+          }
+        });
   }
 }

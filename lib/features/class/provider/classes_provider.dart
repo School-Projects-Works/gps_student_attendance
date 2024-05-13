@@ -37,7 +37,7 @@ class ClassProvider extends StateNotifier<List<ClassModel>> {
   void deleteClass(String id) async {
     CustomDialog.dismiss();
     CustomDialog.showLoading(message: 'Deleting Class.....');
-   var status = await ClassServices.deleteClass(id);
+    var status = await ClassServices.deleteClass(id);
     if (!status) {
       CustomDialog.dismiss();
       CustomDialog.showError(message: 'Failed to delete class');
@@ -49,7 +49,7 @@ class ClassProvider extends StateNotifier<List<ClassModel>> {
   }
 }
 
-final searchProvider = StateProvider<String>((ref) => '');
+final searchProvider = StateProvider.autoDispose<String>((ref) => '');
 final filteredClassList = Provider.autoDispose<List<ClassModel>>((ref) {
   final classes = ref.watch(classProvider);
   final search = ref.watch(searchProvider);
@@ -104,7 +104,8 @@ class JoinClass extends StateNotifier<void> {
     if (classModel.classType!.toLowerCase() != 'public') {
       await ClassServices.updateClass(classModel);
       //check if user id is equal to lecturer id
-      CustomDialog.showSuccess(
+      CustomDialog.dismiss();
+      CustomDialog.showToast(
           message:
               'You have successfully joined class, Pending approval from lecturer');
     } else {
@@ -112,7 +113,30 @@ class JoinClass extends StateNotifier<void> {
       classModel.students.add(users.toMap());
       //update class
       await ClassServices.updateClass(classModel);
-      CustomDialog.showSuccess(message: 'You have successfully joined class');
+      CustomDialog.dismiss();
+      CustomDialog.showToast(message: 'You have successfully joined class');
+    }
+    CustomDialog.dismiss();
+  }
+
+  void leaveClass(
+      {required ClassModel classModel,
+      required Users users,
+      required WidgetRef ref}) async {
+    CustomDialog.dismiss();
+    CustomDialog.showLoading(message: 'Leaving Class.....');
+    //remove user id from class studentIds
+    classModel.studentIds.remove(users.id);
+    //remove student map from class students
+    classModel.students.removeWhere((element) => element['id'] == users.id);
+    //update class
+    var success = await ClassServices.updateClass(classModel);
+    if (success) {
+      CustomDialog.dismiss();
+      CustomDialog.showToast(message: 'You have successfully left class');
+    } else {
+      CustomDialog.dismiss();
+      CustomDialog.showError(message: 'Failed to leave class');
     }
   }
 }

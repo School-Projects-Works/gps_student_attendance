@@ -171,7 +171,31 @@ class _EditClassPageState extends ConsumerState<EditClassPage> {
                                         ),
                                       ),
                                     ),
-
+Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ListTile(
+                                        contentPadding: EdgeInsets.zero,
+                                        title: Text('Class Venue:',
+                                            style: styles.textStyle(
+                                                mobile: 15,
+                                                desktop: 18,
+                                                tablet: 16)),
+                                        subtitle: CustomTextFields(
+                                          hintText: 'Enter Class Venue',
+                                          controller:  TextEditingController(
+                                              text: editProvider.classVenue),
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return 'Class venue is required';
+                                            }
+                                            return null;
+                                          },
+                                          onSaved: (value) {
+                                            notifier.setVenue(value!);
+                                          },
+                                        ),
+                                      ),
+                                    ),
                                     //class day dropdown
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),

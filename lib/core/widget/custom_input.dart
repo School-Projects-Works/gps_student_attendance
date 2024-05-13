@@ -68,7 +68,7 @@ class CustomTextFields extends ConsumerWidget {
       inputFormatters: [
         if (isCapitalized!) UpperCaseTextFormatter(),
         if (isDigitOnly ?? false)
-          FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+          FilteringTextInputFormatter.allow(RegExp(r'^[-+]?\d*\.?\d{0,200}')),
         PreventDeleteFormatter(max!, min!),
       ],
       textCapitalization: isCapitalized!

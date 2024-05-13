@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gps_student_attendance/config/router/router_info.dart';
 import 'package:gps_student_attendance/core/functions/navigation.dart';
+import 'package:gps_student_attendance/core/functions/transparent_page.dart';
 import 'package:gps_student_attendance/core/widget/custom_button.dart';
 import 'package:gps_student_attendance/core/widget/custom_dialog.dart';
 import 'package:gps_student_attendance/features/attendance/provider/attendance_provider.dart';
+import 'package:gps_student_attendance/features/attendance/views/new_attendnace.dart';
+import 'package:gps_student_attendance/features/auth/data/user_model.dart';
 import 'package:gps_student_attendance/features/auth/provider/login_provider.dart';
 import 'package:gps_student_attendance/features/class/provider/classes_provider.dart';
 import 'package:gps_student_attendance/features/home/views/components/class_card.dart';
@@ -18,10 +21,16 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // var userStream = ref.watch(loginProviderStream);
-    var classList = ref.watch(classProvider);
+
     var user = ref.watch(userProvider);
     var breakPiont = ResponsiveBreakpoints.of(context);
     var styles = CustomStyles(context: context);
+    var classList = user.userType == 'Lecturer'
+        ? ref.watch(classProvider)
+        : ref
+            .watch(classProvider)
+            .where((element) => element.studentIds.contains(user.id))
+            .toList();
     return SafeArea(
       child: Scaffold(
         floatingActionButton: ResponsiveVisibility(
@@ -194,21 +203,40 @@ class HomePage extends ConsumerWidget {
                   return ListView.separated(
                       separatorBuilder: (context, index) => const Divider(),
                       shrinkWrap: true,
-                      itemCount: 5,
+                      itemCount: data.length,
                       itemBuilder: (context, index) {
                         var attendance = data[index];
+                        var students = attendance.students
+                            .map((e) => Users.fromMap(e).indexNumber)
+                            .toList();
                         return ListTile(
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  '${attendance.classCode} - ${attendance.className}',
-                                  style: styles.textStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: primaryColor,
-                                      desktop: 22,
-                                      mobile: 18),
+                                Expanded(
+                                  child: Text(
+                                    '${attendance.classCode} - ${attendance.className}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: styles.textStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: primaryColor,
+                                        desktop: 18,
+                                        tablet: 16,
+                                        mobile: 15),
+                                  ),
                                 ),
+                              ],
+                            ),
+                            subtitle: Column(
+                              children: [
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: students
+                                      .map((e) => Text(e ?? ''))
+                                      .toList(),
+                                ),
+                                const SizedBox(height: 5),
                                 TextButton(
                                   onPressed: () {},
                                   child: Text(
@@ -219,11 +247,7 @@ class HomePage extends ConsumerWidget {
                                   ),
                                 )
                               ],
-                            ),
-                            subtitle:Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [],)
-                            );
+                            ));
                       });
                 }, error: (error, stack) {
                   return const Center(
@@ -239,7 +263,18 @@ class HomePage extends ConsumerWidget {
                   color: secondaryColor,
                 ),
                 if (user.userType == 'Lecturer')
-                  CustomButton(text: 'Start Attendance', onPressed: () {})
+                  CustomButton(
+                      text: 'Start Attendance',
+                      onPressed: () {
+                        if (classList.isNotEmpty) {
+                          Navigator.of(context).push(TransparentRoute(
+                              builder: (BuildContext context) =>
+                                  const NewAttendance()));
+                        } else {
+                          CustomDialog.showError(
+                              message: 'You do not have any class yet');
+                        }
+                      })
               ],
             ))
       ],

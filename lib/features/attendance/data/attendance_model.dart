@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
-
 
 class AttendanceModel {
   String? id;
@@ -16,9 +14,8 @@ class AttendanceModel {
   double? lat;
   double? long;
   String? status;
-  List<String>? studentIds;
-  List<Map<String, dynamic>>? students;
-  String? qrcode;
+  List<String> studentIds;
+  List<Map<String, dynamic>> students;
   int? createdAt;
   AttendanceModel({
     this.id,
@@ -33,9 +30,8 @@ class AttendanceModel {
     this.lat,
     this.long,
     this.status,
-    this.studentIds,
-    this.students,
-    this.qrcode,
+    this.studentIds=const [],
+    this.students = const [],
     this.createdAt,
   });
 
@@ -52,9 +48,8 @@ class AttendanceModel {
     ValueGetter<double?>? lat,
     ValueGetter<double?>? long,
     ValueGetter<String?>? status,
-    ValueGetter<List<String>?>? studentIds,
-    ValueGetter<List<Map<String, dynamic>>?>? students,
-    ValueGetter<String?>? qrcode,
+    List<String>? studentIds,
+    List<Map<String, dynamic>>? students,
     ValueGetter<int?>? createdAt,
   }) {
     return AttendanceModel(
@@ -70,9 +65,8 @@ class AttendanceModel {
       lat: lat != null ? lat() : this.lat,
       long: long != null ? long() : this.long,
       status: status != null ? status() : this.status,
-      studentIds: studentIds != null ? studentIds() : this.studentIds,
-      students: students != null ? students() : this.students,
-      qrcode: qrcode != null ? qrcode() : this.qrcode,
+      studentIds: studentIds ?? this.studentIds,
+      students: students ?? this.students,
       createdAt: createdAt != null ? createdAt() : this.createdAt,
     );
   }
@@ -93,7 +87,6 @@ class AttendanceModel {
       'status': status,
       'studentIds': studentIds,
       'students': students,
-      'qrcode': qrcode,
       'createdAt': createdAt,
     };
   }
@@ -113,8 +106,7 @@ class AttendanceModel {
       long: map['long']?.toDouble(),
       status: map['status'],
       studentIds: List<String>.from(map['studentIds']),
-      students: map['students'] != null ? List<Map<String, dynamic>>.from(map['students']?.map((x) => Map<String, dynamic>.from(x))) : null,
-      qrcode: map['qrcode'],
+      students: List<Map<String, dynamic>>.from(map['students']?.map((x) => Map<String, dynamic>.from(x))),
       createdAt: map['createdAt']?.toInt(),
     );
   }
@@ -126,7 +118,7 @@ class AttendanceModel {
 
   @override
   String toString() {
-    return 'AttendanceModel(id: $id, classId: $classId, className: $className, classCode: $classCode, lecturerId: $lecturerId, lecturerName: $lecturerName, date: $date, startTime: $startTime, endTime: $endTime, lat: $lat, long: $long, status: $status, studentIds: $studentIds, students: $students, qrcode: $qrcode, createdAt: $createdAt)';
+    return 'AttendanceModel(id: $id, classId: $classId, className: $className, classCode: $classCode, lecturerId: $lecturerId, lecturerName: $lecturerName, date: $date, startTime: $startTime, endTime: $endTime, lat: $lat, long: $long, status: $status, studentIds: $studentIds, students: $students, createdAt: $createdAt)';
   }
 
   @override
@@ -148,7 +140,6 @@ class AttendanceModel {
       other.status == status &&
       listEquals(other.studentIds, studentIds) &&
       listEquals(other.students, students) &&
-      other.qrcode == qrcode &&
       other.createdAt == createdAt;
   }
 
@@ -168,7 +159,6 @@ class AttendanceModel {
       status.hashCode ^
       studentIds.hashCode ^
       students.hashCode ^
-      qrcode.hashCode ^
       createdAt.hashCode;
   }
 }

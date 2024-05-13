@@ -22,12 +22,11 @@ GoRouter router(WidgetRef ref) => GoRouter(
         navigatorKey: rootNavigatorKey,
         initialLocation: RouterInfo.loginRoute.path,
         redirect: (context, state) async {
-
           var box = Hive.box('route').get('currentRoute').toString();
           var user = await AuthServices.checkIfLoggedIn();
           ref.read(userProvider.notifier).setUser(user);
           var route = state.matchedLocation;
-          
+
           if ((route.contains('login'))) {
             if (user.id != null && user.id != '') {
               ref.read(userProvider.notifier).setUser(user);
@@ -38,7 +37,10 @@ GoRouter router(WidgetRef ref) => GoRouter(
           } else if (route.contains('new-class') &&
               box.contains(RouterInfo.newClassRoute.name)) {
             return null;
-              }else if (route.contains('edit-class') &&
+              } else if (route.contains('new-attendance') &&
+              box.contains(RouterInfo.newAttendanceRoute.name)) {
+            return null;
+          } else if (route.contains('edit-class') &&
               box.contains(RouterInfo.editClassRoute.name)) {
             return null;
           } else if (route.contains('home')) {
@@ -99,5 +101,11 @@ GoRouter router(WidgetRef ref) => GoRouter(
                       final id = state.pathParameters['id'];
                       return EditClassPage(id!);
                     }),
+                GoRoute(
+                    path: RouterInfo.newAttendanceRoute.path,
+                    name: RouterInfo.newAttendanceRoute.name,
+                    builder: (context, state) => const Scaffold(
+                          backgroundColor: Colors.transparent,
+                        )),
               ]),
         ]);

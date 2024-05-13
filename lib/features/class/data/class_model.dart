@@ -1,6 +1,9 @@
 import 'dart:convert';
+
 import 'package:faker/faker.dart';
 import 'package:flutter/foundation.dart';
+
+
 import 'package:gps_student_attendance/core/constants/colors_list.dart';
 
 class ClassModel {
@@ -16,6 +19,7 @@ class ClassModel {
   String? lecturerImage;
   List<String> studentIds;
   String? classDay;
+  String? classVenue;
   String? status;
   String? startTime;
   String? endTime;
@@ -36,6 +40,7 @@ class ClassModel {
     this.lecturerImage,
     this.studentIds = const [],
     this.classDay,
+    this.classVenue,
     this.status,
     this.startTime,
     this.endTime,
@@ -58,6 +63,7 @@ class ClassModel {
     ValueGetter<String?>? lecturerImage,
     List<String>? studentIds,
     ValueGetter<String?>? classDay,
+    ValueGetter<String?>? classVenue,
     ValueGetter<String?>? status,
     ValueGetter<String?>? startTime,
     ValueGetter<String?>? endTime,
@@ -79,6 +85,7 @@ class ClassModel {
       lecturerImage: lecturerImage != null ? lecturerImage() : this.lecturerImage,
       studentIds: studentIds ?? this.studentIds,
       classDay: classDay != null ? classDay() : this.classDay,
+      classVenue: classVenue != null ? classVenue() : this.classVenue,
       status: status != null ? status() : this.status,
       startTime: startTime != null ? startTime() : this.startTime,
       endTime: endTime != null ? endTime() : this.endTime,
@@ -103,6 +110,7 @@ class ClassModel {
       'lecturerImage': lecturerImage,
       'studentIds': studentIds,
       'classDay': classDay,
+      'classVenue': classVenue,
       'status': status,
       'startTime': startTime,
       'endTime': endTime,
@@ -127,6 +135,7 @@ class ClassModel {
       lecturerImage: map['lecturerImage'],
       studentIds: List<String>.from(map['studentIds']),
       classDay: map['classDay'],
+      classVenue: map['classVenue'],
       status: map['status'],
       startTime: map['startTime'],
       endTime: map['endTime'],
@@ -144,7 +153,7 @@ class ClassModel {
 
   @override
   String toString() {
-    return 'ClassModel(id: $id, name: $name, code: $code, color: $color, availableToDepartments: $availableToDepartments, availableToLevels: $availableToLevels, classType: $classType, lecturerId: $lecturerId, lecturerName: $lecturerName, lecturerImage: $lecturerImage, studentIds: $studentIds, classDay: $classDay, status: $status, startTime: $startTime, endTime: $endTime, lat: $lat, long: $long, createdAt: $createdAt, students: $students)';
+    return 'ClassModel(id: $id, name: $name, code: $code, color: $color, availableToDepartments: $availableToDepartments, availableToLevels: $availableToLevels, classType: $classType, lecturerId: $lecturerId, lecturerName: $lecturerName, lecturerImage: $lecturerImage, studentIds: $studentIds, classDay: $classDay, classVenue: $classVenue, status: $status, startTime: $startTime, endTime: $endTime, lat: $lat, long: $long, createdAt: $createdAt, students: $students)';
   }
 
   @override
@@ -164,6 +173,7 @@ class ClassModel {
       other.lecturerImage == lecturerImage &&
       listEquals(other.studentIds, studentIds) &&
       other.classDay == classDay &&
+      other.classVenue == classVenue &&
       other.status == status &&
       other.startTime == startTime &&
       other.endTime == endTime &&
@@ -187,6 +197,7 @@ class ClassModel {
       lecturerImage.hashCode ^
       studentIds.hashCode ^
       classDay.hashCode ^
+      classVenue.hashCode ^
       status.hashCode ^
       startTime.hashCode ^
       endTime.hashCode ^
@@ -237,7 +248,6 @@ class ClassModel {
         id: faker.guid.guid(),
         name: classInfo[i]['classTitle']!,
         code: classInfo[i]['className']!,
-      
         lecturerId: 'Lecturer $i',
         lecturerName: faker.person.name(),
         color: faker.randomGenerator.element(colorsList),

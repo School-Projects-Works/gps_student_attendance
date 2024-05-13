@@ -36,6 +36,9 @@ class NewClassProvider extends StateNotifier<ClassModel> {
   void setClassDay(String value) {
     state = state.copyWith(classDay: () => value);
   }
+    void setVenue(String s) {
+    state = state.copyWith(classVenue: () => s);
+    }
 
   void setEndTime(String string) {
     state = state.copyWith(endTime: () => string);
@@ -115,4 +118,6 @@ class NewClassProvider extends StateNotifier<ClassModel> {
       CustomDialog.showError(message: newMessage);
     }
   }
+
+
 }

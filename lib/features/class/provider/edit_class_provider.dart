@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
-
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gps_student_attendance/config/router/router_info.dart';
 import 'package:gps_student_attendance/core/constants/departments.dart';
@@ -41,6 +40,10 @@ class EditClassProvider extends StateNotifier<ClassModel> {
     state = state.copyWith(classDay: () => string);
   }
 
+  void setVenue(String s) {
+    state = state.copyWith(classVenue: () => s);
+  }
+
   void setStartTime(String string) {
     state = state.copyWith(startTime: () => string);
   }
@@ -73,7 +76,13 @@ class EditClassProvider extends StateNotifier<ClassModel> {
     var levels = state.availableToLevels ?? [];
     if (e == "All") {
       levels.clear();
-      levels = ['100', '200', '300', '400', 'Grad',];
+      levels = [
+        '100',
+        '200',
+        '300',
+        '400',
+        'Grad',
+      ];
       state = state.copyWith(availableToLevels: () => levels);
       return;
     }
@@ -101,7 +110,7 @@ class EditClassProvider extends StateNotifier<ClassModel> {
       ref.read(classProvider.notifier).updateClass(state);
       CustomDialog.dismiss();
       CustomDialog.showToast(message: 'Class Updated Successfully');
-      if(mounted) {
+      if (mounted) {
         navigateToRoute(context: context, route: RouterInfo.homeRoute);
       }
     } else {
