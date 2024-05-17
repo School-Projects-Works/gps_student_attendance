@@ -5,51 +5,57 @@ import 'package:gps_student_attendance/features/attendance/services/attendance_s
 import 'package:gps_student_attendance/features/auth/provider/login_provider.dart';
 import 'package:gps_student_attendance/features/class/provider/classes_provider.dart';
 
+final attendanceByUserType =
+    StreamProvider.autoDispose<List<AttendanceModel>>((ref) async* {
+  var user = ref.watch(userProvider);
+  if (user.id == null) return;
+  if (user.userType == 'Lecturer') {
+    final attendanceSnap =
+        AttendanceServices.getAttendanceByLecturerId(user.id!);
+    await for (final attendance in attendanceSnap) {
+      var list = attendance.docs.map((e) {
+        return AttendanceModel.fromMap(e.data());
+      }).toList();
+      //order createdAt
+      list.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
+      ref.read(attendanceProvider.notifier).setAttendance(list);
+      yield list;
+    }
+  } else {
+    final classesList = ref.watch(classProvider);
+    var userClassList = classesList
+        .where((element) => element.studentIds.contains(user.id))
+        .toList();
+    if (userClassList.isEmpty) return;
+    final attendanceSnap = AttendanceServices.getAttendanceByClassIds(
+        userClassList.map((e) => e.id).toList());
+    await for (final attendance in attendanceSnap) {
+      var list = attendance.docs
+          .map((e) => AttendanceModel.fromMap(e.data()))
+          .toList();
+      //order createdAt
+      list.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
+      ref.read(attendanceProvider.notifier).setAttendance(list);
+      yield list;
+    }
+  }
+});
 final attendanceByClassIdStream = StreamProvider.family
     .autoDispose<List<AttendanceModel>, String>((ref, classId) async* {
   final attendanceSnap = AttendanceServices.getAttendanceByClassId(classId);
   await for (final attendance in attendanceSnap) {
-    var list =
-        attendance.docs.map((e) => AttendanceModel.fromMap(e.data())).toList();
-    //order createdAt
-    list.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
-     ref.read(attendanceProvider.notifier).setAttendance(list);
-    yield list;
-  }
-});
-
-final attendanceByLecturerStream = StreamProvider.family
-    .autoDispose<List<AttendanceModel>, String>((ref, lecturerId) async* {
-  final attendanceSnap =
-      AttendanceServices.getAttendanceByLecturerId(lecturerId);
-  await for (final attendance in attendanceSnap) {
-    var list = attendance.docs.map((e) {
-      return AttendanceModel.fromMap(e.data());
-    }).toList();
-    //order createdAt
-    list.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
-     ref.read(attendanceProvider.notifier).setAttendance(list);
-    yield list;
-  }
-});
-
-final attendanceByStudentsAllClassStream =
-    StreamProvider.autoDispose<List<AttendanceModel>>((ref) async* {
-  var user = ref.watch(userProvider);
-  final classesList = ref.watch(classProvider);
-  if (user.id == null || user.userType == 'Lecturer') return;
-  var userClassList = classesList
-      .where((element) => element.studentIds.contains(user.id))
-      .toList();
-  if (userClassList.isEmpty) return;
-  final attendanceSnap = AttendanceServices.getAttendanceByClassIds(
-      userClassList.map((e) => e.id).toList());
-  await for (final attendance in attendanceSnap) {
-    var list =
-        attendance.docs.map((e) => AttendanceModel.fromMap(e.data())).toList();
+    List<Map<String, dynamic>> data =
+        attendance.docs.map((e) => e.data()).toList();
+    var list = data.map((e) => AttendanceModel.fromMap(e)).toList();
     //order createdAt
     list.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
     ref.read(attendanceProvider.notifier).setAttendance(list);
     yield list;
   }
+});
+
+final attendanceById = FutureProvider.family
+    .autoDispose<AttendanceModel?, String>((ref, id) async {
+  var attendance = await AttendanceServices.getAttendanceById(id);
+  return attendance;
 });

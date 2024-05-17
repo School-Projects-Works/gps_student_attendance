@@ -11,7 +11,7 @@ void navigateToRoute({required BuildContext context, required RouterInfo route})
  
 }
 void navigateToName(
-    {required BuildContext context, required RouterInfo route,required Map<String,String> parameter}) async {
+    {required BuildContext context, required RouterInfo route,required Map<String,String> parameter, Map<String,String>? extra}) async {
   await Hive.box('route').put('currentRoute', route.name);
-  context.goNamed(route.name,pathParameters: parameter);
+  context.goNamed(route.name,pathParameters: parameter,extra: extra);
 }

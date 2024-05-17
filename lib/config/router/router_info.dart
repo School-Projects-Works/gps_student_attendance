@@ -19,4 +19,6 @@ class RouterInfo {
   static RouterInfo editClassRoute = RouterInfo(name: 'edit-class', path: '/edit-class/:id');
 
   static RouterInfo newAttendanceRoute = RouterInfo(name: 'new-attendance', path: '/new-attendance');
+
+  static RouterInfo attendanceListRoute = RouterInfo(name: 'attendance-list', path: '/attendance-list/:classId/:id');
 }

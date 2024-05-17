@@ -140,10 +140,7 @@ class HomePage extends ConsumerWidget {
     var user = ref.watch(userProvider);
     var breakPiont = ResponsiveBreakpoints.of(context);
     var styles = CustomStyles(context: context);
-    var attendanceList = ref.watch(attendanceByStudentsAllClassStream);
-    if (user.userType == 'Lecturer') {
-      attendanceList = ref.watch(attendanceByLecturerStream(user.id!));
-    }
+    var attendanceList = ref.watch(attendanceByUserType);
     return Column(
       children: [
         Container(
@@ -209,6 +206,8 @@ class HomePage extends ConsumerWidget {
                         var students = attendance.students
                             .map((e) => Users.fromMap(e).indexNumber)
                             .toList();
+                        var classData = classList.firstWhere(
+                            (element) => element.id == attendance.classId);
                         return ListTile(
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -228,24 +227,41 @@ class HomePage extends ConsumerWidget {
                                 ),
                               ],
                             ),
-                            subtitle: Column(
+                            subtitle: Row(
                               children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: students
-                                      .map((e) => Text(e ?? ''))
-                                      .toList(),
+                                Expanded(
+                                  child: Text(students.join(', '),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: styles.textStyle(
+                                          color: Colors.grey,
+                                          desktop: 16,
+                                          tablet: 14,
+                                          mobile: 13)),
                                 ),
-                                const SizedBox(height: 5),
                                 TextButton(
-                                  onPressed: () {},
-                                  child: Text(
-                                    'View all',
-                                    style: styles.textStyle(
-                                        color: secondaryColor,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                )
+                                    onPressed: () {
+                                      if (attendance.students.isNotEmpty) {
+                                        navigateToName(
+                                            context: context,
+                                            route:
+                                                RouterInfo.attendanceListRoute,
+                                            
+                                            parameter: {
+                                              'id': attendance.id!,
+                                              'classId':classData.id
+                                            });
+                                      } else {
+                                        CustomDialog.showError(
+                                            message:
+                                                'No attendance for this class yet');
+                                      }
+                                    },
+                                    child: const Text(
+                                      'View',
+                                      style: TextStyle(
+                                          color: secondaryColor, fontSize: 14),
+                                    )),
                               ],
                             ));
                       });

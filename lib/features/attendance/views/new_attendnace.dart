@@ -168,9 +168,9 @@ class _NewAttendanceState extends ConsumerState<NewAttendance> {
             ],
           ),
           const SizedBox(height: 20),
-          if (classModel != null &&
-              classModel.lat != null &&
-              classModel.long != null)
+          if (
+              newAttendance.lat != null &&
+              newAttendance.long != null)
             //check box to use default location
             Row(
               children: [
@@ -188,9 +188,9 @@ class _NewAttendanceState extends ConsumerState<NewAttendance> {
                         fontWeight: FontWeight.bold)),
               ],
             ),
-          if (classModel != null &&
-              classModel.lat != null &&
-              classModel.long != null)
+          if (
+              newAttendance.lat != null &&
+              newAttendance.long != null)
             const SizedBox(height: 10),
           Row(
             children: [

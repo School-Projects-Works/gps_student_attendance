@@ -51,7 +51,9 @@ class GPSServices {
 
   static double? calculateDistance(double latitude, double longitude, double d, double e) {
     try{
-      double distanceInMeters =  Geolocator.distanceBetween(latitude, longitude, d, e);
+      print('student lat: $latitude, student long: $longitude');
+      print('class lat: $d, class long: $e');
+      double distanceInMeters =  Geolocator.distanceBetween(latitude, longitude, 6.6915242, -1.6841174);
       return distanceInMeters;
     }catch(e){
       return null;

@@ -82,4 +82,35 @@ class AttendanceServices {
       return (false,e.toString());
     }
   }
+
+  static Future<AttendanceModel?> getActiveAttendance({required String classId})async {
+    try{
+      var snap = await firestore.collection('attendance').where('classId',isEqualTo: classId).where('status',isEqualTo: 'active').get();
+      if(snap.docs.isNotEmpty){
+        return AttendanceModel.fromMap(snap.docs.first.data());
+      }
+      return null;
+    }catch(e){
+      return null;
+    }
+  }
+
+  static Future<(bool,String)>updateAttendance({required AttendanceModel attendance})async {
+    try {
+      //save attendance to firestore
+      await firestore.collection('attendance').doc(attendance.id).update(attendance.toMap());
+      return (true,'Attendance updated successfully');
+    } catch (e) {
+      return (false,e.toString());
+    }
+  }
+
+  static Future<AttendanceModel>getAttendanceById(String id)async {
+    try {
+      var snap = await firestore.collection('attendance').doc(id).get();
+      return AttendanceModel.fromMap(snap.data()!);
+    } catch (e) {
+      return AttendanceModel();
+    }
+  }
 }

@@ -28,9 +28,6 @@ if(!kIsWeb) {
   var path = '${appDocumentsDir.path}/db';
    Hive.init(path);
 }
-
-
-  
   await Hive.openBox('user');
   await Hive.openBox('route');
   runApp(const ProviderScope(child: MyApp()));

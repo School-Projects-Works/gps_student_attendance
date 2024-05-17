@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gps_student_attendance/config/router/router_info.dart';
+import 'package:gps_student_attendance/features/attendance/views/attendance_list.dart';
 import 'package:gps_student_attendance/features/auth/provider/login_provider.dart';
 import 'package:gps_student_attendance/features/auth/services/auth_services.dart';
 import 'package:gps_student_attendance/features/auth/views/auth_main_page.dart';
@@ -37,11 +38,14 @@ GoRouter router(WidgetRef ref) => GoRouter(
           } else if (route.contains('new-class') &&
               box.contains(RouterInfo.newClassRoute.name)) {
             return null;
-              } else if (route.contains('new-attendance') &&
+          } else if (route.contains('new-attendance') &&
               box.contains(RouterInfo.newAttendanceRoute.name)) {
             return null;
           } else if (route.contains('edit-class') &&
               box.contains(RouterInfo.editClassRoute.name)) {
+            return null;
+          } else if (route.contains('attendance-list') &&
+              box.contains(RouterInfo.attendanceListRoute.name)) {
             return null;
           } else if (route.contains('home')) {
             Hive.box('route').put('currentRoute', RouterInfo.homeRoute.name);
@@ -107,5 +111,16 @@ GoRouter router(WidgetRef ref) => GoRouter(
                     builder: (context, state) => const Scaffold(
                           backgroundColor: Colors.transparent,
                         )),
+                GoRoute(
+                    path: RouterInfo.attendanceListRoute.path,
+                    name: RouterInfo.attendanceListRoute.name,
+                    builder: (context, state) {
+                      final id = state.pathParameters['id'];
+                      var classId = state.pathParameters['classId'];
+                      return AttendanceListPage(
+                        id: id,
+                        classId: classId!,
+                      );
+                    }),
               ]),
         ]);

@@ -1,9 +1,6 @@
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
-
 import 'package:gps_student_attendance/core/widget/custom_button.dart';
-import 'package:gps_student_attendance/core/widget/custom_dialog.dart';
-import 'package:gps_student_attendance/generated/assets.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;

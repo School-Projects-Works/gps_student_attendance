@@ -1,13 +1,10 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:gps_student_attendance/config/router/router_info.dart';
 import 'package:gps_student_attendance/core/functions/color_convertor.dart';
 import 'package:gps_student_attendance/core/functions/navigation.dart';
 import 'package:gps_student_attendance/core/functions/transparent_page.dart';
-import 'package:gps_student_attendance/core/widget/custom_button.dart';
 import 'package:gps_student_attendance/core/widget/custom_dialog.dart';
 import 'package:gps_student_attendance/features/attendance/data/attendance_model.dart';
 import 'package:gps_student_attendance/features/attendance/provider/atten_actions_provider.dart';
@@ -16,9 +13,9 @@ import 'package:gps_student_attendance/features/attendance/views/new_attendnace.
 import 'package:gps_student_attendance/features/attendance/views/qr_widget.dart';
 import 'package:gps_student_attendance/features/auth/data/user_model.dart';
 import 'package:gps_student_attendance/features/class/data/class_model.dart';
+import 'package:gps_student_attendance/features/home/views/components/qr_scanner.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-
 import '../../../auth/provider/login_provider.dart';
 import '../../../class/provider/classes_provider.dart';
 
@@ -36,8 +33,9 @@ class _ClassCardState extends ConsumerState<ClassCard> {
 
   @override
   Widget build(BuildContext context) {
-    var attendanceSream =
+    var attendanceStream =
         ref.watch(attendanceByClassIdStream(widget.classModel.id));
+    var pointBreaker = ResponsiveBreakpoints.of(context);
     return InkWell(
         onTap: () {
           // navigate to class detail
@@ -47,12 +45,35 @@ class _ClassCardState extends ConsumerState<ClassCard> {
             _hover = value;
           });
         },
-        child: attendanceSream.when(
+        child: attendanceStream.when(
           loading: () {
-            return _buildCard(loading: true);
+            return Card(
+                child: Container(
+                    width:
+                        pointBreaker.isMobile ? pointBreaker.screenWidth : 350,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Center(child: CircularProgressIndicator())));
           },
           error: ((error, stackTrace) {
-            return _buildCard(error: error.toString());
+            return Card(
+                child: Container(
+                    width:
+                        pointBreaker.isMobile ? pointBreaker.screenWidth : 350,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                        child: Text(
+                      'Error: $error',
+                      style: CustomStyles(context: context).textStyle(
+                          color: Colors.red,
+                          fontFamily: 'OpenSans',
+                          fontWeight: FontWeight.bold),
+                    ))));
           }),
           data: (data) {
             return _buildCard(attendance: data);
@@ -60,10 +81,7 @@ class _ClassCardState extends ConsumerState<ClassCard> {
         ));
   }
 
-  Widget _buildCard(
-      {List<AttendanceModel>? attendance,
-      String? error,
-      bool loading = false}) {
+  Widget _buildCard({List<AttendanceModel>? attendance}) {
     var styles = CustomStyles(context: context);
     var pointBreaker = ResponsiveBreakpoints.of(context);
     var user = ref.watch(userProvider);
@@ -74,7 +92,6 @@ class _ClassCardState extends ConsumerState<ClassCard> {
           .where((element) => element.status!.toLowerCase() == 'active')
           .toList();
     }
-    print('Active : ${activeAttendance.length}');
     return Card(
         elevation: _hover ? 10 : 6,
         child: Container(
@@ -267,9 +284,7 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                         ],
                       ),
                     ),
-                    // const Divider(
-                    //   color: Colors.black12,
-                    // ),
+
                     const Divider(),
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -345,7 +360,6 @@ class _ClassCardState extends ConsumerState<ClassCard> {
   }
 
   Widget _buildStudentManu(Users user, AttendanceModel? attendanceModel) {
-    print('Attendance Model: ${attendanceModel?.toMap()}');
     var students =
         widget.classModel.students.map((e) => Users.fromMap(e)).toList();
     var studentFound =
@@ -362,10 +376,137 @@ class _ClassCardState extends ConsumerState<ClassCard> {
           !attendanceModel.studentIds.contains(user.id)) {
         return TextButton.icon(
             onPressed: () {
-              ref.read(attendanceProvider.notifier).markAttendance(
-                  classModel: widget.classModel,
-                  attendance: attendanceModel,
-                  ref: ref);
+              if (!kIsWeb) {
+                //show bottom sheet to choose GPS or QR
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  elevation: 10,
+                  backgroundColor: Colors.white,
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Choose GPS or QR to mark attendance',
+                              style: TextStyle(color: Colors.black)),
+                        ],
+                      ),
+                      const Divider(
+                        color: primaryColor,
+                        height: 25,
+                      ),
+                      TextButton.icon(
+                          onPressed: () {
+                            //navigate to qr scanner
+                            Navigator.of(context).push(TransparentRoute(
+                                builder: (BuildContext context) =>
+                                    QRScannerPage(
+                                      classModel: widget.classModel,
+                                      attendanceModel: attendanceModel,
+                                    )));
+
+                            ref
+                                .read(attendanceProvider.notifier)
+                                .markAttendance(
+                                    classModel: widget.classModel,
+                                    attendance: attendanceModel,
+                                    mode: 'QR',
+                                    ref: ref);
+                          },
+                          icon: const Icon(
+                            Icons.qr_code_rounded,
+                            color: primaryColor,
+                          ),
+                          label: const Text(
+                            'Use QR Code',
+                            style: TextStyle(color: primaryColor),
+                          )),
+                      const Divider(),
+                      TextButton.icon(
+                          onPressed: () {
+                            ref
+                                .read(attendanceProvider.notifier)
+                                .markAttendance(
+                                    classModel: widget.classModel,
+                                    attendance: attendanceModel,
+                                    mode: 'GPS',
+                                    ref: ref);
+                          },
+                          icon: const Icon(
+                            Icons.gps_fixed_rounded,
+                            color: primaryColor,
+                          ),
+                          label: const Text(
+                            'Use GPS',
+                            style: TextStyle(color: primaryColor),
+                          )),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ));
+              } else {
+                //show a dialog to choose GPS or QR
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title:
+                            const Text('Choose GPS or QR to mark attendance'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextButton.icon(
+                                onPressed: () {
+                                  //navigate to qr scanner
+                                  Navigator.of(context).push(TransparentRoute(
+                                      builder: (BuildContext context) =>
+                                          QRScannerPage(
+                                            classModel: widget.classModel,
+                                            attendanceModel: attendanceModel,
+                                          )));
+
+                                  ref
+                                      .read(attendanceProvider.notifier)
+                                      .markAttendance(
+                                          classModel: widget.classModel,
+                                          attendance: attendanceModel,
+                                          mode: 'QR',
+                                          ref: ref);
+                                },
+                                icon: const Icon(
+                                  Icons.qr_code_rounded,
+                                  color: primaryColor,
+                                ),
+                                label: const Text(
+                                  'Use QR Code',
+                                  style: TextStyle(color: primaryColor),
+                                )),
+                            const Divider(),
+                            TextButton.icon(
+                                onPressed: () {
+                                  ref
+                                      .read(attendanceProvider.notifier)
+                                      .markAttendance(
+                                          classModel: widget.classModel,
+                                          attendance: attendanceModel,
+                                          mode: 'GPS',
+                                          ref: ref);
+                                },
+                                icon: const Icon(
+                                  Icons.gps_fixed_rounded,
+                                  color: primaryColor,
+                                ),
+                                label: const Text(
+                                  'Use GPS',
+                                  style: TextStyle(color: primaryColor),
+                                )),
+                          ],
+                        ),
+                      );
+                    });
+              }
             },
             icon: const Icon(Icons.check),
             label: const Text(
@@ -373,6 +514,12 @@ class _ClassCardState extends ConsumerState<ClassCard> {
               style:
                   TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
             ));
+      }
+      if (attendanceModel == null) {
+        return const Text(
+          'No Attendance Today',
+          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+        );
       }
     }
     return const SizedBox.shrink();
@@ -382,7 +529,14 @@ class _ClassCardState extends ConsumerState<ClassCard> {
     if (attendanceModel != null) {
       return TextButton.icon(
           onPressed: () {
-            //Todo end attendance
+            CustomDialog.showInfo(
+                message: 'Are you sure you want to end?',
+                buttonText: 'End',
+                onPressed: () {
+                  ref
+                      .read(attendanceProvider.notifier)
+                      .endAttendance(attendanceModel);
+                });
           },
           icon: const Icon(Icons.cancel_presentation_rounded),
           label: const Text('End Attendance'));
@@ -392,7 +546,6 @@ class _ClassCardState extends ConsumerState<ClassCard> {
   }
 
   Widget _studentManu(Users user, AttendanceModel? attendanceModel) {
-    
     return PopupMenuButton<int>(
         color: Colors.white,
         iconColor: Colors.white38,
@@ -444,6 +597,20 @@ class _ClassCardState extends ConsumerState<ClassCard> {
 
               break;
             case 1:
+              if (attendanceModel != null &&
+                  attendanceModel.students.isNotEmpty) {
+                navigateToName(
+                    context: context,
+                    route: RouterInfo.attendanceListRoute,
+                   
+                    parameter: {
+                      'id': attendanceModel.id!,
+                      'classId': widget.classModel.id
+                    });
+              } else {
+                CustomDialog.showError(
+                    message: 'No attendance for this class yet');
+              }
               break;
 
             default:
@@ -530,12 +697,21 @@ class _ClassCardState extends ConsumerState<ClassCard> {
         onSelected: (value) {
           switch (value) {
             case 0:
-              //end attendance
+              CustomDialog.showInfo(
+                  message: 'Are you sure you want to end?',
+                  buttonText: 'End',
+                  onPressed: () {
+                    ref
+                        .read(attendanceProvider.notifier)
+                        .endAttendance(attendanceModel!);
+                  });
               break;
             case 1:
               if (widget.classModel.students.isNotEmpty) {
                 Navigator.of(context).push(TransparentRoute(
-                    builder: (BuildContext context) => const NewAttendance()));
+                    builder: (BuildContext context) => NewAttendance(
+                          classModel: widget.classModel,
+                        )));
               } else {
                 CustomDialog.showError(
                     message:
@@ -548,6 +724,16 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                       QRWidget(id: attendanceModel!.id!)));
               break;
             case 3:
+              if (attendanceModel != null &&
+                  attendanceModel!.students.isNotEmpty) {
+                navigateToName(
+                    context: context,
+                    route: RouterInfo.attendanceListRoute,
+                    parameter: {'id': attendanceModel.id!});
+              } else {
+                CustomDialog.showError(
+                    message: 'No attendance for this class yet');
+              }
               break;
             case 4:
               navigateToName(
