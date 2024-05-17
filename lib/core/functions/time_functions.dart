@@ -11,9 +11,11 @@ class TimeUtils {
     return TimeOfDay(hour: hour, minute: minute);
   }
 
-  static String formatDateTime(int time) {
+  static String formatDateTime(int time, {bool onlyDate = false}) {
     var date = DateTime.fromMillisecondsSinceEpoch(time);
-    var formatter = DateFormat('EEE, MMM dd yyyy HH:mm:ss a');
+    var formatter = onlyDate
+        ? DateFormat('EEEE, MMM dd yyyy')
+        : DateFormat('EEE, MMM dd yyyy HH:mm:ss a');
     return formatter.format(date);
   }
 }

@@ -103,6 +103,14 @@ class NewAttendanceProvider extends StateNotifier<AttendanceModel> {
         calssData.long != null ? calssData.long.toString() : '');
   }
 
+  void setStartTime(String string) {
+    state = state.copyWith(startTime: () => string);
+  }
+
+  void setEndTime(String string) {
+    state = state.copyWith(endTime: () => string);
+  }
+
   void startAttendance(
       {required WidgetRef ref,
       required BuildContext context,
@@ -193,6 +201,9 @@ class AttendanceProvider extends StateNotifier<List<AttendanceModel>> {
       return;
     }
     if (attendanceDate != today) {
+      print('=========================================== day check');
+      print(attendanceDate);
+      print(today);
       CustomDialog.dismiss();
       CustomDialog.showError(message: 'Attendance is over');
       return;
@@ -203,8 +214,11 @@ class AttendanceProvider extends StateNotifier<List<AttendanceModel>> {
       CustomDialog.showError(message: 'Attendance has not started yet');
       return;
     }
-    if (now.isAfter(
-        DateTime(now.year, now.month, now.day, endTime.hour, endTime.minute))) {
+    if (now.isAfter(DateTime(
+        now.year, now.month, now.day, endTime.hour + 12, endTime.minute))) {
+      print('=========================================== time check');
+      print('${endTime.hour} ${endTime.minute}');
+      print('${now.hour} ${now.minute}');
       CustomDialog.dismiss();
       CustomDialog.showError(message: 'Attendance is over');
       return;
@@ -243,7 +257,8 @@ class AttendanceProvider extends StateNotifier<List<AttendanceModel>> {
       if (success) {
         var distance = GPSServices.calculateDistance(position!.latitude,
             position.longitude, attendance.lat!, attendance.long!);
-        if (distance == null || distance > 100) {
+        print('Distance=====================$distance');
+        if (distance == null || distance > 300) {
           CustomDialog.dismiss();
           CustomDialog.showError(
               message:
@@ -281,25 +296,26 @@ class AttendanceProvider extends StateNotifier<List<AttendanceModel>> {
     }
   }
 
-  void endAttendance(AttendanceModel attendance)async {
+  void endAttendance(AttendanceModel attendance) async {
     CustomDialog.dismiss();
     CustomDialog.showLoading(message: 'Ending Attendance....');
     attendance = attendance.copyWith(status: () => 'ended');
-   var(sucess,message) =await AttendanceServices.updateAttendance(attendance: attendance);
-    if(sucess){
+    var (sucess, message) =
+        await AttendanceServices.updateAttendance(attendance: attendance);
+    if (sucess) {
       CustomDialog.dismiss();
       CustomDialog.showSuccess(message: message);
-    }else{
+    } else {
       CustomDialog.dismiss();
       CustomDialog.showError(message: message);
     }
   }
 
-  void exportData(List<StudentsModel> students, BuildContext context, WidgetRef ref) async{
+  void exportData(
+      List<StudentsModel> students, BuildContext context, WidgetRef ref) async {
     CustomDialog.showLoading(message: 'Exporting Data....');
     var message = await ExportServices().exportToExcel(students);
     CustomDialog.dismiss();
     CustomDialog.showToast(message: message);
-    
   }
 }

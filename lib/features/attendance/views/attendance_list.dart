@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gps_student_attendance/config/router/router_info.dart';
+import 'package:gps_student_attendance/core/functions/navigation.dart';
 import 'package:gps_student_attendance/core/functions/time_functions.dart';
 import 'package:gps_student_attendance/core/widget/custom_button.dart';
 import 'package:gps_student_attendance/features/attendance/data/attendance_model.dart';
@@ -7,6 +9,7 @@ import 'package:gps_student_attendance/features/attendance/provider/attendance_p
 import 'package:gps_student_attendance/features/class/data/class_model.dart';
 import 'package:gps_student_attendance/features/class/provider/classes_provider.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import '../../../core/widget/table/data/models/custom_table_columns_model.dart';
 import '../../../core/widget/table/data/models/custom_table_rows_model.dart';
 import '../../../core/widget/table/widgets/custom_table.dart';
@@ -57,46 +60,81 @@ class _AttendanceListPageState extends ConsumerState<AttendanceListPage> {
       AttendanceModel attendance, ClassModel thisClass, CustomStyles styles) {
     var students =
         attendance.students.map((e) => StudentsModel.fromJson(e)).toList();
+    var textStyles = CustomStyles(context: context).textStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.w600,
+        desktop: 16,
+        mobile: 14,
+        tablet: 15);
+    var breakPoint = ResponsiveBreakpoints.of(context);
     return CustomTable<StudentsModel>(
         header: Row(
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '${thisClass.code}: ${thisClass.name}',
-                  style: styles.textStyle(
-                      fontWeight: FontWeight.bold,
-                      desktop: 22,
-                      mobile: 17,
-                      color: primaryColor),
-                ),
-                //class time
-                Text(
-                  'Time: ${TimeUtils.formatDateTime(attendance.date!)}',
-                  style: styles.textStyle(
-                      fontWeight: FontWeight.w600,
-                      desktop: 18,
-                      mobile: 14,
-                      color: secondaryColor),
-                ),
-              ],
+            IconButton(
+                onPressed: () {
+                  navigateToRoute(
+                      context: context, route: RouterInfo.homeRoute);
+                },
+                icon: const Icon(Icons.close)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${thisClass.code}: ${thisClass.name}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: styles.textStyle(
+                        fontWeight: FontWeight.bold,
+                        desktop: 22,
+                        mobile: 17,
+                        color: primaryColor),
+                  ),
+                  //const SizedBox(height: 2),
+                  //class time
+                  Text(
+                    'Time: ${TimeUtils.formatDateTime(attendance.date!)}',
+                    style: styles.textStyle(
+                        fontWeight: FontWeight.w600,
+                        desktop: 18,
+                        mobile: 14,
+                        color: secondaryColor),
+                  ),
+                ],
+              ),
             ),
-            const Spacer(),
-            CustomButton(
-              text: 'Export Data',
-              radius: 10,
-              color: secondaryColor,
-              onPressed: () {
-                //export data
-                ref
-                    .read(attendanceProvider.notifier)
-                    .exportData(students, context, ref);
-              },
-              icon: const Icon(Icons.file_copy),
-            ),
+            const SizedBox(width: 10),
+            if (breakPoint.smallerThan(TABLET))
+              IconButton(
+                  onPressed: () {},
+                  icon: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: secondaryColor.withOpacity(.4),
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(2)),
+                      child: const Icon(Icons.import_export))),
+            if (breakPoint.largerThan(MOBILE))
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: CustomButton(
+                  text: 'Export Data',
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                  radius: 10,
+                  color: secondaryColor,
+                  onPressed: () {
+                    //export data
+                    ref
+                        .read(attendanceProvider.notifier)
+                        .exportData(students, context, ref);
+                  },
+                  icon: const Icon(Icons.file_copy),
+                ),
+              ),
           ],
         ),
         data: students,
@@ -111,42 +149,47 @@ class _AttendanceListPageState extends ConsumerState<AttendanceListPage> {
         ],
         columns: [
           CustomTableColumn<StudentsModel>(
+              width: 200,
               title: 'Index Number',
               cellBuilder: (item) {
-                return Text(item.indexNumber);
+                return Text(
+                  item.indexNumber,
+                  style: textStyles,
+                );
               }),
           CustomTableColumn<StudentsModel>(
               title: 'Full Name',
               cellBuilder: (item) {
-                return Text(item.name);
+                return Text(item.name, style: textStyles);
               }),
           CustomTableColumn<StudentsModel>(
               title: 'Gender',
               width: 100,
               cellBuilder: (item) {
-                return Text(item.gender);
+                return Text(item.gender, style: textStyles);
               }),
           CustomTableColumn<StudentsModel>(
               title: 'Email',
               cellBuilder: (item) {
-                return Text(item.email);
+                return Text(item.email, style: textStyles);
               }),
           CustomTableColumn<StudentsModel>(
               title: 'Phone',
-              width: 100,
+              width: 120,
               cellBuilder: (item) {
-                return Text(item.phone);
+                return Text(item.phone, style: textStyles);
               }),
           CustomTableColumn<StudentsModel>(
               title: 'Mode',
               width: 100,
               cellBuilder: (item) {
-                return Text(item.mode);
+                return Text(item.mode, style: textStyles);
               }),
           CustomTableColumn<StudentsModel>(
               title: 'Time',
               cellBuilder: (item) {
-                return Text(TimeUtils.formatDateTime(item.time));
+                return Text(TimeUtils.formatDateTime(item.time),
+                    style: textStyles);
               }),
         ]);
   }

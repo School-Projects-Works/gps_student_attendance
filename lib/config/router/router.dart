@@ -35,6 +35,10 @@ GoRouter router(WidgetRef ref) => GoRouter(
               return RouterInfo.homeRoute.path;
             }
             return null;
+          } else if (route.contains('register') &&
+              box.contains(RouterInfo.registerRoute.name)) {
+           
+            return null;
           } else if (route.contains('new-class') &&
               box.contains(RouterInfo.newClassRoute.name)) {
             return null;

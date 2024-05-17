@@ -16,6 +16,7 @@ import 'package:gps_student_attendance/features/class/data/class_model.dart';
 import 'package:gps_student_attendance/features/home/views/components/qr_scanner.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import '../../../attendance/views/class_attendnace.dart';
 import '../../../auth/provider/login_provider.dart';
 import '../../../class/provider/classes_provider.dart';
 
@@ -597,20 +598,18 @@ class _ClassCardState extends ConsumerState<ClassCard> {
 
               break;
             case 1:
-              if (attendanceModel != null &&
-                  attendanceModel.students.isNotEmpty) {
-                navigateToName(
-                    context: context,
-                    route: RouterInfo.attendanceListRoute,
-                   
-                    parameter: {
-                      'id': attendanceModel.id!,
-                      'classId': widget.classModel.id
-                    });
-              } else {
-                CustomDialog.showError(
-                    message: 'No attendance for this class yet');
-              }
+              //show dialog to view attendance
+               showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      contentPadding: const EdgeInsets.all(0),
+                      titlePadding: EdgeInsets.zero,
+                      buttonPadding: EdgeInsets.zero,
+                      backgroundColor: Colors.transparent,
+                      content: classAttendance(context, widget.classModel, ref),
+                    );
+                  });
               break;
 
             default:
@@ -724,16 +723,17 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                       QRWidget(id: attendanceModel!.id!)));
               break;
             case 3:
-              if (attendanceModel != null &&
-                  attendanceModel!.students.isNotEmpty) {
-                navigateToName(
-                    context: context,
-                    route: RouterInfo.attendanceListRoute,
-                    parameter: {'id': attendanceModel.id!});
-              } else {
-                CustomDialog.showError(
-                    message: 'No attendance for this class yet');
-              }
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      contentPadding: const EdgeInsets.all(0),
+                      titlePadding: EdgeInsets.zero,
+                      buttonPadding: EdgeInsets.zero,
+                      backgroundColor: Colors.transparent,
+                      content: classAttendance(context, widget.classModel, ref),
+                    );
+                  });
               break;
             case 4:
               navigateToName(

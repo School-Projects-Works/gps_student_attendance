@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gps_student_attendance/config/router/router_info.dart';
+import 'package:gps_student_attendance/core/functions/navigation.dart';
 import 'package:gps_student_attendance/core/widget/custom_button.dart';
 import 'package:gps_student_attendance/core/widget/custom_input.dart';
 import 'package:gps_student_attendance/features/auth/provider/login_provider.dart';
@@ -18,16 +19,18 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  // final _emailController = TextEditingController();
+  // final _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var styles = CustomStyles(context: context);
     var breakPiont = ResponsiveBreakpoints.of(context);
     var provider = ref.watch(loginProvider);
     var notifier = ref.read(loginProvider.notifier);
-    _emailController.text = breakPiont.isMobile ? 'teck.koda@gmail.com' :'emmanuelfrimpong07@gmail.com';
-    _passwordController.text = breakPiont.isMobile ? 'teck1234' :'0548405953';
+    // _emailController.text = breakPiont.isMobile
+    //     ? 'teck.koda@gmail.com'
+    //     : 'emmanuelfrimpong07@gmail.com';
+    // _passwordController.text = breakPiont.isMobile ? 'teck1234' : '0548405953';
     return Container(
       color: Colors.white,
       height: breakPiont.screenHeight,
@@ -121,7 +124,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                       CustomTextFields(
                                         label: 'Email',
                                         prefixIcon: Icons.email,
-                                        controller: _emailController,
+                                        //controller: _emailController,
                                         hintText: 'Enter your email',
                                         keyboardType:
                                             TextInputType.emailAddress,
@@ -144,7 +147,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         label: 'Password',
                                         prefixIcon: Icons.lock,
                                         hintText: 'Enter your password',
-                                        controller: _passwordController,
+                                        //controller: _passwordController,
                                         obscureText: ref
                                             .watch(loginObsecureTextProvider),
                                         suffixIcon: IconButton(
@@ -206,7 +209,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               .validate()) {
                                             //todo login user
                                             _formKey.currentState!.save();
-                                            notifier.loginUser(ref:ref,context: context);
+                                            notifier.loginUser(
+                                                ref: ref, context: context);
                                           }
                                         },
                                       ),
@@ -226,9 +230,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             ),
                                             TextButton(
                                               onPressed: () {
-                                                //todo navigate to register page
-                                                context.push(RouterInfo
-                                                    .registerRoute.path);
+                                                navigateToRoute(
+                                                    context: context,
+                                                    route: RouterInfo
+                                                        .registerRoute);
                                               },
                                               child: Text(
                                                 'Register',

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gps_student_attendance/config/router/router_info.dart';
+import 'package:gps_student_attendance/core/functions/navigation.dart';
 import 'package:gps_student_attendance/features/auth/provider/register_screen_provider.dart';
 import 'package:gps_student_attendance/features/auth/views/pages/registration_pages/bio_data_page.dart';
 import 'package:gps_student_attendance/features/auth/views/pages/registration_pages/user_type_page.dart';
@@ -17,7 +19,6 @@ class RegistrationPage extends ConsumerStatefulWidget {
 class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
-    print(ResponsiveBreakpoints.of(context).screenWidth);
     return SafeArea(
       child: Scaffold(
         appBar: PreferredSize(
@@ -25,6 +26,17 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
           child: ResponsiveVisibility(
             hiddenConditions: const [Condition.largerThan(name: TABLET)],
             child: AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  if (ref.watch(currentScreenProvider) == 0) {
+                    navigateToRoute(
+                        context: context, route: RouterInfo.loginRoute);
+                  } else {
+                    ref.read(currentScreenProvider.notifier).state = 0;
+                  }
+                },
+              ),
               title: Image.asset(Assets.imagesIcon, height: 30),
             ),
           ),

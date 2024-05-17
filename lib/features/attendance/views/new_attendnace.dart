@@ -152,7 +152,9 @@ class _NewAttendanceState extends ConsumerState<NewAttendance> {
                     hintText: 'Start Time',
                     value: newAttendance.startTime,
                     onChanged:
-                        defaultValues.useDefaultTime ? null : (value) {}),
+                        defaultValues.useDefaultTime ? null : (value) {
+                      notifier.setStartTime(value.toString());
+                        }),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -163,7 +165,9 @@ class _NewAttendanceState extends ConsumerState<NewAttendance> {
                     hintText: 'End Time',
                     value: newAttendance.endTime,
                     onChanged:
-                        defaultValues.useDefaultTime ? null : (value) {}),
+                        defaultValues.useDefaultTime ? null : (value) {
+                      notifier.setEndTime(value.toString());
+                        }),
               ),
             ],
           ),
