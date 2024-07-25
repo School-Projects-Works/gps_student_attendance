@@ -60,7 +60,7 @@ class AuthServices {
         return ('Wrong password provided for that user.', null);
       } else if (e.toString().contains('invalid') ||
           e.toString().contains('incorrect')) {
-        return ('No user found for that email.', null);
+        return ('Password Incorrect.', null);
       }
       return (e.toString(), null);
     } catch (error) {

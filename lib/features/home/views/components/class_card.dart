@@ -309,16 +309,16 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                               TextButton.icon(
                                   style: ButtonStyle(
                                     backgroundColor:
-                                        MaterialStateProperty.all<Color>(
+                                        WidgetStateProperty.all<Color>(
                                             widget.classModel.color!.toColor()),
-                                    shape: MaterialStateProperty.all<
+                                    shape: WidgetStateProperty.all<
                                         RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                     ),
                                     foregroundColor:
-                                        MaterialStateProperty.all<Color>(
+                                        WidgetStateProperty.all<Color>(
                                             Colors.white),
                                   ),
                                   onPressed: () {
@@ -408,13 +408,13 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                                       attendanceModel: attendanceModel,
                                     )));
 
-                            ref
-                                .read(attendanceProvider.notifier)
-                                .markAttendance(
-                                    classModel: widget.classModel,
-                                    attendance: attendanceModel,
-                                    mode: 'QR',
-                                    ref: ref);
+                            // ref
+                            //     .read(attendanceProvider.notifier)
+                            //     .markAttendance(
+                            //         classModel: widget.classModel,
+                            //         attendance: attendanceModel,
+                            //         mode: 'QR',
+                            //         ref: ref);
                           },
                           icon: const Icon(
                             Icons.qr_code_rounded,
@@ -468,13 +468,7 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                                             attendanceModel: attendanceModel,
                                           )));
 
-                                  ref
-                                      .read(attendanceProvider.notifier)
-                                      .markAttendance(
-                                          classModel: widget.classModel,
-                                          attendance: attendanceModel,
-                                          mode: 'QR',
-                                          ref: ref);
+                                  
                                 },
                                 icon: const Icon(
                                   Icons.qr_code_rounded,
@@ -570,18 +564,18 @@ class _ClassCardState extends ConsumerState<ClassCard> {
                   ],
                 ),
               ),
-            if (studentFound && attendanceModel != null)
-              const PopupMenuItem(
-                padding: EdgeInsets.only(right: 50, left: 20),
-                value: 1,
-                child: Row(
-                  children: [
-                    Icon(Icons.list_alt_rounded),
-                    SizedBox(width: 10),
-                    Text('View Attendance'),
-                  ],
-                ),
-              ),
+            // if (studentFound && attendanceModel != null)
+            //   const PopupMenuItem(
+            //     padding: EdgeInsets.only(right: 50, left: 20),
+            //     value: 1,
+            //     child: Row(
+            //       children: [
+            //         Icon(Icons.list_alt_rounded),
+            //         SizedBox(width: 10),
+            //         Text('View Attendance'),
+            //       ],
+            //     ),
+            //   ),
           ];
         },
         onSelected: (value) {

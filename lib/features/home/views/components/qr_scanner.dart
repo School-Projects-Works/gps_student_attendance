@@ -74,7 +74,6 @@ class _QRScannerPageState extends ConsumerState<QRScannerPage> {
       this.controller = controller;
     });
     controller.scannedDataStream.listen((scanData) {
-      print('Data: ${scanData.code}');
       if (scanData.code == widget.attendanceModel!.id) {
         controller.dispose();
         ref.read(attendanceProvider.notifier).markAttendance(

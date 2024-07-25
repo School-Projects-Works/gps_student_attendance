@@ -138,43 +138,22 @@ class HomePage extends ConsumerWidget {
       {required WidgetRef ref, required BuildContext context}) {
     var classList = ref.watch(classProvider);
     var user = ref.watch(userProvider);
-    var breakPiont = ResponsiveBreakpoints.of(context);
+    ResponsiveBreakpoints.of(context);
     var styles = CustomStyles(context: context);
     var attendanceList = ref.watch(attendanceByUserType);
-    return Column(
-      children: [
-        Container(
-          width: 400,
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(vertical: 30),
-          decoration: BoxDecoration(
-            color: secondaryColor,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 5,
-                blurRadius: 7,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Text('My Attendance'.toUpperCase(),
-              style: styles.textStyle(
-                  color: Colors.white,
-                  mobile: 22,
-                  tablet: 25,
-                  fontWeight: FontWeight.bold,
-                  desktop: 30)),
-        ),
-        Container(
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
             width: 400,
-            padding: const EdgeInsets.symmetric(vertical: 10),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(vertical: 30),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: secondaryColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.5),
@@ -184,116 +163,139 @@ class HomePage extends ConsumerWidget {
                 ),
               ],
             ),
-            child: Column(
-              children: [
-                attendanceList.when(data: (data) {
-                  if (data.isEmpty) {
-                    return const Center(
-                        child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 40),
-                      child: Text(
-                        'No attendance yet',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ));
-                  }
-                  return ListView.separated(
-                      separatorBuilder: (context, index) => const Divider(),
-                      shrinkWrap: true,
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        var attendance = data[index];
-                        var students = attendance.students
-                            .map((e) => Users.fromMap(e).indexNumber)
-                            .toList();
-                        var classData = classList.firstWhere(
-                            (element) => element.id == attendance.classId);
-                        return ListTile(
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    '${attendance.classCode} - ${attendance.className}',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: styles.textStyle(
-                                        fontWeight: FontWeight.w600,
-                                        color: primaryColor,
-                                        desktop: 18,
-                                        tablet: 16,
-                                        mobile: 15),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            subtitle: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(students.join(', '),
-                                      maxLines: 2,
+            child: Text('My Attendance'.toUpperCase(),
+                style: styles.textStyle(
+                    color: Colors.white,
+                    mobile: 22,
+                    tablet: 25,
+                    fontWeight: FontWeight.bold,
+                    desktop: 30)),
+          ),
+          Container(
+              width: 400,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  attendanceList.when(data: (data) {
+                    if (data.isEmpty) {
+                      return const Center(
+                          child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 40),
+                        child: Text(
+                          'No attendance yet',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ));
+                    }
+                    return ListView.separated(
+                        separatorBuilder: (context, index) => const Divider(),
+                        shrinkWrap: true,
+                        itemCount: data.length,
+                        itemBuilder: (context, index) {
+                          var attendance = data[index];
+                          var students = attendance.students
+                              .map((e) => Users.fromMap(e).indexNumber)
+                              .toList();
+                          var classData = classList.firstWhere(
+                              (element) => element.id == attendance.classId);
+                          return ListTile(
+                              title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      '${attendance.classCode} - ${attendance.className}',
+                                      maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: styles.textStyle(
-                                          color: Colors.grey,
-                                          desktop: 16,
-                                          tablet: 14,
-                                          mobile: 13)),
-                                ),
-                                TextButton(
-                                    onPressed: () {
-                                      if (attendance.students.isNotEmpty) {
-                                        navigateToName(
-                                            context: context,
-                                            route:
-                                                RouterInfo.attendanceListRoute,
-                                            
-                                            parameter: {
-                                              'id': attendance.id!,
-                                              'classId':classData.id
-                                            });
-                                      } else {
-                                        CustomDialog.showError(
-                                            message:
-                                                'No attendance for this class yet');
-                                      }
-                                    },
-                                    child: const Text(
-                                      'View',
-                                      style: TextStyle(
-                                          color: secondaryColor, fontSize: 14),
-                                    )),
-                              ],
-                            ));
-                      });
-                }, error: (error, stack) {
-                  return const Center(
-                      child: Text(
-                    'Error loading data',
-                    style: TextStyle(color: Colors.red),
-                  ));
-                }, loading: () {
-                  return const Center(child: CircularProgressIndicator());
-                }),
-                const Divider(
-                  height: 25,
-                  color: secondaryColor,
-                ),
-                if (user.userType == 'Lecturer')
-                  CustomButton(
-                      text: 'Start Attendance',
-                      onPressed: () {
-                        if (classList.isNotEmpty) {
-                          Navigator.of(context).push(TransparentRoute(
-                              builder: (BuildContext context) =>
-                                  const NewAttendance()));
-                        } else {
-                          CustomDialog.showError(
-                              message: 'You do not have any class yet');
-                        }
-                      })
-              ],
-            ))
-      ],
+                                          fontWeight: FontWeight.w600,
+                                          color: primaryColor,
+                                          desktop: 18,
+                                          tablet: 16,
+                                          mobile: 15),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              subtitle: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(students.join(', '),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: styles.textStyle(
+                                            color: Colors.grey,
+                                            desktop: 16,
+                                            tablet: 14,
+                                            mobile: 13)),
+                                  ),
+                                  TextButton(
+                                      onPressed: () {
+                                        if (attendance.students.isNotEmpty) {
+                                          navigateToName(
+                                              context: context,
+                                              route:
+                                                  RouterInfo.attendanceListRoute,
+                                              
+                                              parameter: {
+                                                'id': attendance.id!,
+                                                'classId':classData.id
+                                              });
+                                        } else {
+                                          CustomDialog.showError(
+                                              message:
+                                                  'No attendance for this class yet');
+                                        }
+                                      },
+                                      child: const Text(
+                                        'View',
+                                        style: TextStyle(
+                                            color: secondaryColor, fontSize: 14),
+                                      )),
+                                ],
+                              ));
+                        });
+                  }, error: (error, stack) {
+                    return const Center(
+                        child: Text(
+                      'Error loading data',
+                      style: TextStyle(color: Colors.red),
+                    ));
+                  }, loading: () {
+                    return const Center(child: CircularProgressIndicator());
+                  }),
+                  const Divider(
+                    height: 25,
+                    color: secondaryColor,
+                  ),
+                  if (user.userType == 'Lecturer')
+                    CustomButton(
+                        text: 'Start Attendance',
+                        onPressed: () {
+                          if (classList.isNotEmpty) {
+                            Navigator.of(context).push(TransparentRoute(
+                                builder: (BuildContext context) =>
+                                    const NewAttendance()));
+                          } else {
+                            CustomDialog.showError(
+                                message: 'You do not have any class yet');
+                          }
+                        })
+                ],
+              ))
+        ],
+      ),
     );
   }
 }
