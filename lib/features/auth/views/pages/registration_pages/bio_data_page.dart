@@ -71,26 +71,6 @@ class BioDataPage extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           child: Row(
                             children: [
-                              SizedBox(
-                                width: 100,
-                                child: CustomDropDown(
-                                  items: [
-                                    'Mr.',
-                                    'Mrs.',
-                                    'Miss',
-                                    'Dr.',
-                                    'Prof.',
-                                  ]
-                                      .map((e) => DropdownMenuItem(
-                                          value: e, child: Text(e)))
-                                      .toList(),
-                                  hintText: 'Select Prefix',
-                                  onChanged: (value) {
-                                    notifier.setPrefix(value.toString());
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 5),
                               Expanded(
                                 child: CustomTextFields(
                                   color: Colors.pink[700]!,

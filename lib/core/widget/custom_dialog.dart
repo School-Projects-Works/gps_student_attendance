@@ -80,7 +80,7 @@ class CustomDialog {
                         ),
                         onPressed: () => SmartDialog.dismiss(),
                         child: Text(
-                          'Okey',
+                          'Okay',
                           style: styles.textStyle(mobile: 14),
                         ),
                       ),
@@ -154,7 +154,7 @@ class CustomDialog {
                         ),
                         onPressed: () => SmartDialog.dismiss(),
                         child: Text(
-                          'Okey',
+                          'Okay',
                           style: styles.textStyle(mobile: 14),
                         ),
                       ),

@@ -10,7 +10,6 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 class RegistrationPage extends ConsumerStatefulWidget {
   const RegistrationPage({super.key});
-
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
       _RegistrationPageState();

@@ -122,7 +122,7 @@ class _UserTypeScreenState extends ConsumerState<UserTypeScreen> {
                     visible: provider.userType == 'Student',
                     child: ListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text('What is your Indexnumber?',
+                        title: Text('What is your Index number?',
                             style: styles.textStyle(
                                 mobile: 18, desktop: 25, tablet: 20)),
                         subtitle: Padding(
@@ -133,7 +133,7 @@ class _UserTypeScreenState extends ConsumerState<UserTypeScreen> {
                               isPhoneInput: true,
                               keyboardType: TextInputType.number,
                               color: Colors.yellow[700]!,
-                              hintText: 'Enter Program name',
+                              hintText: 'Enter index number',
                               onChanged: (value) {
                                 notifier.setIndexNumber(value);
                               },
@@ -277,7 +277,7 @@ class _UserTypeScreenState extends ConsumerState<UserTypeScreen> {
               if (breakPoint.isMobile)
                 TextButton.icon(
                   onPressed: () {
-                     notifier.validateUserType(ref: ref);
+                    notifier.validateUserType(ref: ref);
                   },
                   icon: const Icon(Icons.arrow_forward_outlined),
                   label: Text(
