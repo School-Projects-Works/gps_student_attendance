@@ -1,37 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:gps_student_attendance/config/router/router_info.dart';
-import 'package:gps_student_attendance/core/functions/navigation.dart';
-import 'package:gps_student_attendance/core/widget/custom_button.dart';
-import 'package:gps_student_attendance/core/widget/custom_input.dart';
-import 'package:gps_student_attendance/features/auth/provider/login_provider.dart';
-import 'package:gps_student_attendance/generated/assets.dart';
-import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-class LoginPage extends ConsumerStatefulWidget {
-  const LoginPage({super.key});
+import '../../../../config/router/router_info.dart';
+import '../../../../core/functions/navigation.dart';
+import '../../../../core/widget/custom_button.dart';
+import '../../../../core/widget/custom_input.dart';
+import '../../../../generated/assets.dart';
+import '../../../../utils/styles.dart';
+import '../../provider/login_provider.dart';
+
+class ForgotPassword extends ConsumerStatefulWidget {
+  const ForgotPassword({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _LoginPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _ForgotPasswordState();
 }
 
-class _LoginPageState extends ConsumerState<LoginPage> {
+class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
   final _formKey = GlobalKey<FormState>();
-  // final _emailController = TextEditingController();
+   final _emailController = TextEditingController();
   // final _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var styles = CustomStyles(context: context);
     var breakPoint = ResponsiveBreakpoints.of(context);
-    var provider = ref.watch(loginProvider);
     var notifier = ref.read(loginProvider.notifier);
-    // _emailController.text = breakPiont.isMobile
-    //     ? 'teck.koda@gmail.com'
-    //     : 'emmanuelfrimpong07@gmail.com';
-    // _passwordController.text = breakPiont.isMobile ? 'teck1234' : '0548405953';
-    return SingleChildScrollView(
+   return SingleChildScrollView(
       child: Container(
         color: Colors.white,
         height: breakPoint.screenHeight,
@@ -99,15 +94,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   child: Form(
                                     key: _formKey,
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         ResponsiveVisibility(
                                             hiddenConditions: const [
                                               Condition.largerThan(name: TABLET)
                                             ],
-                                            child: Image.asset(Assets.imagesIcon,
-                                                width: 80, height: 80)),
+                                            child: Image.asset(
+                                                Assets.imagesIcon,
+                                                width: 80,
+                                                height: 80)),
                                         Text(
                                           'Login ',
                                           style: styles.textStyle(
@@ -131,9 +129,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               TextInputType.emailAddress,
                                           onSaved: (email) {
                                             notifier.setEmail(email!);
+                                            _emailController.text = email;
                                           },
                                           validator: (email) {
-                                            if (email == null || email.isEmpty) {
+                                            if (email == null ||
+                                                email.isEmpty) {
                                               return 'Email is required';
                                             } else if (!RegExp(
                                                     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
@@ -143,73 +143,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             return null;
                                           },
                                         ),
-                                        const SizedBox(height: 20),
-                                        CustomTextFields(
-                                          label: 'Password',
-                                          prefixIcon: Icons.lock,
-                                          hintText: 'Enter your password',
-                                          //controller: _passwordController,
-                                          obscureText: ref
-                                              .watch(loginObsecureTextProvider),
-                                          suffixIcon: IconButton(
-                                            icon: Icon(ref.watch(
-                                                    loginObsecureTextProvider)
-                                                ? Icons.visibility
-                                                : Icons.visibility_off),
-                                            onPressed: () {
-                                              ref
-                                                      .read(
-                                                          loginObsecureTextProvider
-                                                              .notifier)
-                                                      .state =
-                                                  !ref.read(
-                                                      loginObsecureTextProvider);
-                                            },
-                                          ),
-                                          keyboardType:
-                                              TextInputType.visiblePassword,
-                                          onSaved: (password) {
-                                            notifier.setPassword(password!);
-                                          },
-                                          validator: (password) {
-                                            if (password == null ||
-                                                password.isEmpty) {
-                                              return 'Password is required';
-                                            } else if (password.length < 6) {
-                                              return 'Password must be at least 6 characters';
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                        //forget password
-                                        const SizedBox(height: 10),
-                                        Align(
-                                          alignment: Alignment.centerRight,
-                                          child: TextButton(
-                                            onPressed: () {
-                                             navigateToRoute(context: context, route: RouterInfo.forgetPasswordRoute);
-                                            },
-                                            child: Text(
-                                              'Forget Password?',
-                                              style: styles.textStyle(
-                                                  color: primaryColor,
-                                                  mobile: 14,
-                                                  desktop: 16,
-                                                  tablet: 15,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 20),
+                                        
+                                         const SizedBox(height: 20),
                                         CustomButton(
-                                          text: 'Proceed',
+                                          text: 'Reset Password',
                                           radius: 5,
                                           onPressed: () {
                                             if (_formKey.currentState!
                                                 .validate()) {
                                               //todo login user
                                               _formKey.currentState!.save();
-                                              notifier.loginUser(
+                                              notifier.resetPassword(
+                                                email: _emailController.text,
                                                   ref: ref, context: context);
                                             }
                                           },
@@ -220,23 +165,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                                 MainAxisAlignment.center,
                                             children: [
                                               Text(
-                                                'Don\'t have an account?',
+                                                'Go Back to',
                                                 style: styles.textStyle(
                                                     color: secondaryColor,
                                                     mobile: 14,
                                                     desktop: 14,
                                                     tablet: 14,
-                                                    fontWeight: FontWeight.w600),
+                                                    fontWeight:
+                                                        FontWeight.w600),
                                               ),
                                               TextButton(
                                                 onPressed: () {
                                                   navigateToRoute(
                                                       context: context,
                                                       route: RouterInfo
-                                                          .registerRoute);
+                                                          .loginRoute);
                                                 },
                                                 child: Text(
-                                                  'Register',
+                                                  'Login',
                                                   style: styles.textStyle(
                                                       color: primaryColor,
                                                       mobile: 14,

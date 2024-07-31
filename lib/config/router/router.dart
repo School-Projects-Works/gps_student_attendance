@@ -6,6 +6,7 @@ import 'package:gps_student_attendance/features/attendance/views/attendance_list
 import 'package:gps_student_attendance/features/auth/provider/login_provider.dart';
 import 'package:gps_student_attendance/features/auth/services/auth_services.dart';
 import 'package:gps_student_attendance/features/auth/views/auth_main_page.dart';
+import 'package:gps_student_attendance/features/auth/views/pages/forgot_password_page.dart';
 import 'package:gps_student_attendance/features/auth/views/pages/login_page.dart';
 import 'package:gps_student_attendance/features/auth/views/pages/registration_page.dart';
 import 'package:gps_student_attendance/features/class/views/edit_class.dart';
@@ -51,7 +52,11 @@ GoRouter router(WidgetRef ref) => GoRouter(
           } else if (route.contains('attendance-list') &&
               box.contains(RouterInfo.attendanceListRoute.name)) {
             return null;
-          } else if (route.contains('home')) {
+          } else if(route.contains('forget-password') &&
+              box.contains(RouterInfo.forgetPasswordRoute.name)){
+            return null;
+          }
+          else if (route.contains('home')) {
             Hive.box('route').put('currentRoute', RouterInfo.homeRoute.name);
             return null;
           } else if (route.contains('profile') &&
@@ -80,6 +85,10 @@ GoRouter router(WidgetRef ref) => GoRouter(
                     path: RouterInfo.registerRoute.path,
                     name: RouterInfo.registerRoute.name,
                     builder: (context, state) => const RegistrationPage()),
+                      GoRoute(
+                    path: RouterInfo.forgetPasswordRoute.path,
+                    name: RouterInfo.forgetPasswordRoute.name,
+                    builder: (context, state) => const ForgotPassword()),
               ]),
           ShellRoute(
               navigatorKey: _homeShellNavigatorKey,

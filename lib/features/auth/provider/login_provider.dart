@@ -57,7 +57,7 @@ class LoginProvider extends StateNotifier<Users> {
       ref.read(userProvider.notifier).setUser(userData);
       CustomDialog.dismiss();
       CustomDialog.showSuccess(message: message);
-       navigateToRoute(context: context, route: RouterInfo.homeRoute); 
+      navigateToRoute(context: context, route: RouterInfo.homeRoute);
     } else {
       CustomDialog.dismiss();
       CustomDialog.showError(message: message);
@@ -78,7 +78,23 @@ class LoginProvider extends StateNotifier<Users> {
       ref.read(userProvider.notifier).removeUser();
       CustomDialog.dismiss();
       CustomDialog.showSuccess(message: 'Logged out successfully');
-       navigateToRoute(context: context, route: RouterInfo.loginRoute); 
+      navigateToRoute(context: context, route: RouterInfo.loginRoute);
+    }
+  }
+
+  void resetPassword(
+      {required String email,
+      required WidgetRef ref,
+      required BuildContext context}) async {
+    CustomDialog.showLoading(message: 'Sending reset password link.....');
+    var status = await AuthServices.resetPassword(email);
+    CustomDialog.dismiss();
+    if (status) {
+      CustomDialog.showSuccess(
+          message: 'Reset password link sent to your email');
+          navigateToRoute(context: context, route: RouterInfo.loginRoute);
+    } else {
+      CustomDialog.showError(message: 'Failed to send reset password link');
     }
   }
 }
@@ -166,16 +182,16 @@ class UserProvider extends StateNotifier<Users> {
     CustomDialog.dismiss();
     CustomDialog.showLoading(message: 'Updating user.....');
     var userProfile = ref.watch(userImage);
-    if(userProfile!=null){
-      var (message, url) = await AuthServices.uploadImage(userProfile, state.id!);
+    if (userProfile != null) {
+      var (message, url) =
+          await AuthServices.uploadImage(userProfile, state.id!);
       if (url != null) {
         state = state.copyWith(profileImage: () => url);
         ref.read(userImage.notifier).state = null;
-      }else{
+      } else {
         CustomDialog.dismiss();
         CustomDialog.showError(message: message);
         return;
-      
       }
     }
     await AuthServices.updateUserData(state);

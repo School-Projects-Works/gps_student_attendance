@@ -128,4 +128,13 @@ class AuthServices {
       return ('Error uploading image', null);
     }
   }
+
+  static Future<bool> resetPassword(String email)async {
+    try {
+      await auth.sendPasswordResetEmail(email: email);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
