@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-const primaryColor = Color(0xFF004AAD);
-const primaryColorLight = Color(0xFFE3F2FD);
-const secondaryColor = Color(0xFFEF6538);
-const secondaryColorLight = Color(0xFFFFE0B2);
+const primaryColor = Color(0xFFAD0059);
+const primaryColorLight = Color(0xFFE880C3);
+const secondaryColor = Color(0xFF12D476);
+const secondaryColorLight = Color(0xFFDAFDD4);
 
 class CustomStyles {
   final BuildContext context;

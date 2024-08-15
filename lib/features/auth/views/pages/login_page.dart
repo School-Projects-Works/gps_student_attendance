@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:gps_student_attendance/config/router/router_info.dart';
 import 'package:gps_student_attendance/core/functions/navigation.dart';
 import 'package:gps_student_attendance/core/widget/custom_button.dart';
@@ -27,10 +26,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     var breakPoint = ResponsiveBreakpoints.of(context);
     var provider = ref.watch(loginProvider);
     var notifier = ref.read(loginProvider.notifier);
-    // _emailController.text = breakPiont.isMobile
-    //     ? 'teck.koda@gmail.com'
-    //     : 'emmanuelfrimpong07@gmail.com';
-    // _passwordController.text = breakPiont.isMobile ? 'teck1234' : '0548405953';
+
     return SingleChildScrollView(
       child: Container(
         color: Colors.white,
@@ -76,13 +72,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     Expanded(
                                       child: Container(
                                         height: 400,
-                                        color: primaryColor,
+                                        color: Colors.white,
                                         alignment: Alignment.center,
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Image.asset(Assets.imagesLogo,
-                                                width: 200, height: 200),
+                                            Image.asset(
+                                                'assets/images/login.png',
+                                                width: 200,
+                                                height: 200),
                                           ],
                                         ),
                                       ),
@@ -99,15 +97,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   child: Form(
                                     key: _formKey,
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         ResponsiveVisibility(
                                             hiddenConditions: const [
                                               Condition.largerThan(name: TABLET)
                                             ],
-                                            child: Image.asset(Assets.imagesIcon,
-                                                width: 80, height: 80)),
+                                            child: Image.asset(
+                                                'assets/images/login.png',
+                                                width: 100,
+                                                height: 100)),
                                         Text(
                                           'Login ',
                                           style: styles.textStyle(
@@ -133,7 +134,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             notifier.setEmail(email!);
                                           },
                                           validator: (email) {
-                                            if (email == null || email.isEmpty) {
+                                            if (email == null ||
+                                                email.isEmpty) {
                                               return 'Email is required';
                                             } else if (!RegExp(
                                                     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
@@ -187,7 +189,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                           alignment: Alignment.centerRight,
                                           child: TextButton(
                                             onPressed: () {
-                                             navigateToRoute(context: context, route: RouterInfo.forgetPasswordRoute);
+                                              navigateToRoute(
+                                                  context: context,
+                                                  route: RouterInfo
+                                                      .forgetPasswordRoute);
                                             },
                                             child: Text(
                                               'Forget Password?',
@@ -226,7 +231,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                                     mobile: 14,
                                                     desktop: 14,
                                                     tablet: 14,
-                                                    fontWeight: FontWeight.w600),
+                                                    fontWeight:
+                                                        FontWeight.w600),
                                               ),
                                               TextButton(
                                                 onPressed: () {
