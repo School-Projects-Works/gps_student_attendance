@@ -136,7 +136,7 @@ class HomePage extends ConsumerWidget {
 
   Widget _buildSideList(
       {required WidgetRef ref, required BuildContext context}) {
-    var classList = ref.watch(classProvider);
+    var classList = ref.watch(classProvider).toList();
     var user = ref.watch(userProvider);
     ResponsiveBreakpoints.of(context);
     var styles = CustomStyles(context: context);
@@ -204,11 +204,11 @@ class HomePage extends ConsumerWidget {
                         itemCount: data.length,
                         itemBuilder: (context, index) {
                           var attendance = data[index];
-                          var students = attendance.students
+                          var students = attendance.students.toList()
                               .map((e) => Users.fromMap(e).indexNumber)
                               .toList();
-                          var classData = classList.firstWhere(
-                              (element) => element.id == attendance.classId);
+                          var classData = classList.where(
+                              (element) => element.id == attendance.classId).firstOrNull;
                           return ListTile(
                               title: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -242,7 +242,7 @@ class HomePage extends ConsumerWidget {
                                   ),
                                   TextButton(
                                       onPressed: () {
-                                        if (attendance.students.isNotEmpty) {
+                                        if (attendance.students.isNotEmpty&&classData!=null) {
                                           navigateToName(
                                               context: context,
                                               route:

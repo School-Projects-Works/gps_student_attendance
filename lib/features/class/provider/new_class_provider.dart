@@ -29,8 +29,8 @@ class NewClassProvider extends StateNotifier<ClassModel> {
     state = state.copyWith(name: value);
   }
 
-  void setCode(String value) {
-    state = state.copyWith(code: value);
+  void setCode(Map<String,dynamic> map) {
+    state = state.copyWith(code: map['code'],name: map['title']);
   }
 
   void setClassDay(String value) {
@@ -86,9 +86,7 @@ class NewClassProvider extends StateNotifier<ClassModel> {
             .toList());
   }
 
-  void setClassType(String string) {
-    state = state.copyWith(classType: () => string);
-  }
+
 
   void createClass(
       {required BuildContext context, required WidgetRef ref}) async {
@@ -103,6 +101,7 @@ class NewClassProvider extends StateNotifier<ClassModel> {
     state = state.copyWith(
       lecturerId: user.id,
       lecturerName: user.name,
+      classType:()=> 'Public',
       lecturerImage: () => user.profileImage,
       color: () => colorsList.first,
       status: () => 'active',

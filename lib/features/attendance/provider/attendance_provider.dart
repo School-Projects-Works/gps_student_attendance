@@ -6,13 +6,13 @@ import 'package:gps_student_attendance/features/auth/provider/login_provider.dar
 import 'package:gps_student_attendance/features/class/provider/classes_provider.dart';
 
 final attendanceByUserType =
-    StreamProvider.autoDispose<List<AttendanceModel>>((ref) async* {
+    StreamProvider<List<AttendanceModel>>((ref) async* {
   var user = ref.watch(userProvider);
-  if (user.id == null) return;
+  if (user.id == null) yield[];
   if (user.userType == 'Lecturer') {
     final attendanceSnap =
         AttendanceServices.getAttendanceByLecturerId(user.id!);
-    await for (final attendance in attendanceSnap) {
+    await for (var attendance in attendanceSnap) {
       var list = attendance.docs.map((e) {
         return AttendanceModel.fromMap(e.data());
       }).toList();
@@ -26,7 +26,7 @@ final attendanceByUserType =
     var userClassList = classesList
         .where((element) => element.studentIds.contains(user.id))
         .toList();
-    if (userClassList.isEmpty) return;
+    if (userClassList.isEmpty) yield [];
     final attendanceSnap = AttendanceServices.getAttendanceByClassIds(
         userClassList.map((e) => e.id).toList());
     await for (final attendance in attendanceSnap) {

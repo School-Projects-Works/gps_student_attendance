@@ -1,3 +1,4 @@
+import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +13,8 @@ import 'package:gps_student_attendance/features/class/provider/new_class_provide
 import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
+import '../../../core/constants/classes_list.dart';
+
 class NewClass extends ConsumerStatefulWidget {
   const NewClass({super.key});
 
@@ -21,6 +24,10 @@ class NewClass extends ConsumerStatefulWidget {
 
 class _NewClassState extends ConsumerState<NewClass> {
   final _formKey = GlobalKey<FormState>();
+  var list = classList
+      .toList()
+      .map((map) => '${map['code']} : ${map['title']}')
+      .toList();
   @override
   Widget build(BuildContext context) {
     var styles = CustomStyles(context: context);
@@ -102,52 +109,71 @@ class _NewClassState extends ConsumerState<NewClass> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: ListTile(
                                         contentPadding: EdgeInsets.zero,
-                                        title: Text('Course Code:',
+                                        title: Text('Select Course:',
                                             style: styles.textStyle(
                                                 mobile: 15,
                                                 desktop: 18,
                                                 tablet: 16)),
-                                        subtitle: CustomTextFields(
-                                          max: 7,
-                                          isCapitalized: true,
-                                          hintText: 'Enter Course Code',
+                                        subtitle: CustomDropDown(
+                                          items: list
+                                              .map((course) => DropdownMenuItem(
+                                                  value: course,
+                                                  child: Text(course)))
+                                              .toList(),
+                                          hintText: 'Select Course ',
                                           validator: (value) {
                                             if (value!.isEmpty) {
-                                              return 'Course code is required';
+                                              return 'Course is required';
                                             }
                                             return null;
                                           },
-                                          onSaved: (value) {
-                                            notifier.setCode(value!);
+                                          onChanged: (value) {
+                                            if (value != null) {
+                                              var code = value
+                                                  .toString()
+                                                  .split(':')
+                                                  .first
+                                                  .trim();
+                                              var classItem = classList
+                                                  .where((map) =>
+                                                      map.values.contains(code))
+                                                  .toList()
+                                                  .firstOrNull;
+                                              if (classItem != null) {
+                                                notifier.setCode(classItem);
+                                              } else {
+                                                print('No class ===');
+                                              }
+                                            }
                                           },
                                         ),
                                       ),
                                     ),
                                     //class title
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: ListTile(
-                                        contentPadding: EdgeInsets.zero,
-                                        title: Text('Course Title:',
-                                            style: styles.textStyle(
-                                                mobile: 15,
-                                                desktop: 18,
-                                                tablet: 16)),
-                                        subtitle: CustomTextFields(
-                                          hintText: 'Enter Course Title',
-                                          validator: (value) {
-                                            if (value!.isEmpty) {
-                                              return 'Course title is required';
-                                            }
-                                            return null;
-                                          },
-                                          onSaved: (value) {
-                                            notifier.setName(value!);
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //class venue
+                                    // Padding(
+                                    //   padding: const EdgeInsets.all(8.0),
+                                    //   child: ListTile(
+                                    //     contentPadding: EdgeInsets.zero,
+                                    //     title: Text('Course Title:',
+                                    //         style: styles.textStyle(
+                                    //             mobile: 15,
+                                    //             desktop: 18,
+                                    //             tablet: 16)),
+                                    //     subtitle: CustomTextFields(
+                                    //       hintText: 'Enter Course Title',
+                                    //       validator: (value) {
+                                    //         if (value!.isEmpty) {
+                                    //           return 'Course title is required';
+                                    //         }
+                                    //         return null;
+                                    //       },
+                                    //       onSaved: (value) {
+                                    //         notifier.setName(value!);
+                                    //       },
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    // //class venue
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: ListTile(
@@ -397,57 +423,6 @@ class _NewClassState extends ConsumerState<NewClass> {
                                         ),
                                       ),
                                     ),
-                                    //select private or public class using radio button
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: ListTile(
-                                        contentPadding: EdgeInsets.zero,
-                                        title: Text('Class Type:',
-                                            style: styles.textStyle(
-                                                mobile: 15,
-                                                desktop: 18,
-                                                tablet: 16)),
-                                        subtitle: Row(
-                                          children: [
-                                            Radio(
-                                              value: 'Public',
-                                              groupValue:
-                                                  classProvider.classType,
-                                              onChanged: (value) {
-                                                notifier.setClassType(
-                                                    value.toString());
-                                              },
-                                            ),
-                                            Text('Public',
-                                                style: styles.textStyle(
-                                                    mobile: 15,
-                                                    desktop: 18,
-                                                    tablet: 16)),
-                                            const SizedBox(width: 20),
-                                            Radio(
-                                              value: 'Private',
-                                              groupValue:
-                                                  classProvider.classType,
-                                              onChanged: (value) {
-                                                notifier.setClassType(
-                                                    value.toString());
-                                              },
-                                            ),
-                                            Text('Private',
-                                                style: styles.textStyle(
-                                                    mobile: 15,
-                                                    desktop: 18,
-                                                    tablet: 16)),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Text(
-                                        'Note: You will need to approve students to join private class.',
-                                        style: styles.textStyle(
-                                            mobile: 12,
-                                            desktop: 15,
-                                            tablet: 14)),
 
                                     const SizedBox(height: 15),
                                     Padding(

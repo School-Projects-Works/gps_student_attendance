@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gps_student_attendance/core/widget/custom_dialog.dart';
+import 'package:gps_student_attendance/features/attendance/services/attendance_services.dart';
 import 'package:gps_student_attendance/features/class/data/class_model.dart';
 import 'package:gps_student_attendance/features/class/services/class_services.dart';
 import '../../auth/data/user_model.dart';
@@ -43,6 +44,8 @@ class ClassProvider extends StateNotifier<List<ClassModel>> {
       CustomDialog.showError(message: 'Failed to delete class');
       return;
     }
+    //get all attendance for that class and delete
+    await AttendanceServices.deleteAllAttendance(classId: id);
     state = state.where((e) => e.id != id).toList();
     CustomDialog.dismiss();
     CustomDialog.showToast(message: 'Class Deleted Successfully');

@@ -52,65 +52,92 @@ class AttendanceServices {
     for (var classId in classIds) {
       streams.add(getAttendanceByClassId(classId));
     }
-    return MergeStream([
-      for (var stream in streams) stream!]);
+    return MergeStream([for (var stream in streams) stream!]);
   }
 
   static String getId() {
     return firestore.collection('attendance').doc().id;
   }
 
-  static Future<(bool,String)>saveQrCode(String id, Uint8List capturedImage)async {
+  static Future<(bool, String)> saveQrCode(
+      String id, Uint8List capturedImage) async {
     try {
       //save image to storage
       var ref = storage.ref('attendance').child('$id.png');
-       await ref.putData(
+      await ref.putData(
           capturedImage, SettableMetadata(contentType: 'image/jpeg'));
-          var url = await ref.getDownloadURL();
-      return (true,url);
+      var url = await ref.getDownloadURL();
+      return (true, url);
     } catch (e) {
-      return (false,e.toString());
+      return (false, e.toString());
     }
   }
 
-  static Future<(bool,String)>startAttendance({required AttendanceModel attendance})async {
+  static Future<(bool, String)> startAttendance(
+      {required AttendanceModel attendance}) async {
     try {
       //save attendance to firestore
-      await firestore.collection('attendance').doc(attendance.id).set(attendance.toMap());
-      return (true,'Attendance started successfully');
+      await firestore
+          .collection('attendance')
+          .doc(attendance.id)
+          .set(attendance.toMap());
+      return (true, 'Attendance started successfully');
     } catch (e) {
-      return (false,e.toString());
+      return (false, e.toString());
     }
   }
 
-  static Future<AttendanceModel?> getActiveAttendance({required String classId})async {
-    try{
-      var snap = await firestore.collection('attendance').where('classId',isEqualTo: classId).where('status',isEqualTo: 'active').get();
-      if(snap.docs.isNotEmpty){
+  static Future<AttendanceModel?> getActiveAttendance(
+      {required String classId}) async {
+    try {
+      var snap = await firestore
+          .collection('attendance')
+          .where('classId', isEqualTo: classId)
+          .where('status', isEqualTo: 'active')
+          .get();
+      if (snap.docs.isNotEmpty) {
         return AttendanceModel.fromMap(snap.docs.first.data());
       }
       return null;
-    }catch(e){
+    } catch (e) {
       return null;
     }
   }
 
-  static Future<(bool,String)>updateAttendance({required AttendanceModel attendance})async {
+  static Future<(bool, String)> updateAttendance(
+      {required AttendanceModel attendance}) async {
     try {
       //save attendance to firestore
-      await firestore.collection('attendance').doc(attendance.id).update(attendance.toMap());
-      return (true,'Attendance updated successfully');
+      await firestore
+          .collection('attendance')
+          .doc(attendance.id)
+          .update(attendance.toMap());
+      return (true, 'Attendance updated successfully');
     } catch (e) {
-      return (false,e.toString());
+      return (false, e.toString());
     }
   }
 
-  static Future<AttendanceModel>getAttendanceById(String id)async {
+  static Future<AttendanceModel> getAttendanceById(String id) async {
     try {
       var snap = await firestore.collection('attendance').doc(id).get();
       return AttendanceModel.fromMap(snap.data()!);
     } catch (e) {
       return AttendanceModel();
+    }
+  }
+
+  static deleteAllAttendance({required String classId}) async {
+    //find all attendance
+    var snap = await firestore
+        .collection('attendance')
+        .where('classId', isEqualTo: classId)
+        .get();
+    if (snap.docs.isNotEmpty) {
+      var list = snap.docs.map((data) => AttendanceModel.fromMap(data.data()));
+      for (var item in list) {
+        await firestore.collection('attendance').doc(item.id).delete();
+      }
     }
   }
 }

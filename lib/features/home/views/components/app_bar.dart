@@ -49,69 +49,42 @@ class CustomAppBar extends ConsumerWidget {
       ),
       actions: [
         ResponsiveVisibility(
-          visible: false,
-          visibleConditions: const [
-            Condition.largerThan(name: MOBILE),
-          ],
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: PopupMenuButton<int>(
-              itemBuilder: (context) => [
+            visible: false,
+            visibleConditions: const [
+              Condition.largerThan(name: MOBILE),
+            ],
+            child: Row(
+              children: [
                 if (user.id != null && user.userType == 'Lecturer')
-                  const PopupMenuItem(
-                    padding: EdgeInsets.only(right: 70, left: 30),
-                    value: 0,
-                    child: ListTile(
-                      title: Text('Create Class'),
-                      leading: Icon(Icons.add),
-                    ),
-                  ),
-                const PopupMenuDivider(),
-                const PopupMenuItem(
-                  value: 1,
-                  padding: EdgeInsets.only(right: 70, left: 30),
-                  child: ListTile(
-                    title: Text('Join Class'),
-                    leading: Icon(Icons.join_full_outlined),
-                  ),
+                  TextButton(
+                      onPressed: () {
+                        navigateToRoute(
+                            context: context, route: RouterInfo.newClassRoute);
+                      },
+                      child: const Text('Create Class')),
+                const SizedBox(
+                  width: 10,
                 ),
+                TextButton(
+                    onPressed: () {
+                      CustomDialog.showCustom(
+                          width: breakPoint.isMobile
+                              ? breakPoint.screenWidth
+                              : breakPoint.isTablet
+                                  ? breakPoint.screenWidth * 0.5
+                                  : breakPoint.screenWidth * 0.3,
+                          height: breakPoint.screenHeight,
+                          ui: const ClassSearchPage());
+                    },
+                    child: const Text('Join Class')),
+                const SizedBox(
+                  width: 10,
+                )
               ],
-              child: IconButton(
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(primaryColor),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                ),
-                icon: const Icon(Icons.add),
-                onPressed: null,
-              ),
-              onSelected: (value) async {
-                if (value == 0) {
-                  navigateToRoute(
-                      context: context, route: RouterInfo.newClassRoute);
-                } else {
-                   CustomDialog.showCustom(
-                      width: breakPoint.isMobile
-                          ? breakPoint.screenWidth
-                          : breakPoint.isTablet
-                              ? breakPoint.screenWidth * 0.5
-                              : breakPoint.screenWidth * 0.3,
-                      height: breakPoint.screenHeight,
-                      ui: const ClassSearchPage());
-                }
-              },
-            ),
-          ),
-        ),
+            )),
         if (user.id != null)
           PopupMenuButton<int>(
-            tooltip: 'User Manu',
+            tooltip: 'User Menu',
             color: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(0),
