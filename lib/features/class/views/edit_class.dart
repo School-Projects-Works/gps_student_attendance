@@ -25,20 +25,17 @@ class _EditClassPageState extends ConsumerState<EditClassPage> {
   final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
-   
     super.initState();
-    
-   
-      // check if widget is build
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-         var classList = ref.watch(classProvider);
-        var classItem =
-            classList.where((element) => element.id == widget.id).firstOrNull;
-             if (classItem != null) {
+
+    // check if widget is build
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      var classList = ref.watch(classProvider);
+      var classItem =
+          classList.where((element) => element.id == widget.id).firstOrNull;
+      if (classItem != null) {
         ref.read(editClassProvider.notifier).setClass(classItem);
-             }
-      });
-    
+      }
+    });
   }
 
   @override
@@ -171,7 +168,7 @@ class _EditClassPageState extends ConsumerState<EditClassPage> {
                                         ),
                                       ),
                                     ),
-Padding(
+                                    Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: ListTile(
                                         contentPadding: EdgeInsets.zero,
@@ -182,7 +179,7 @@ Padding(
                                                 tablet: 16)),
                                         subtitle: CustomTextFields(
                                           hintText: 'Enter Class Venue',
-                                          controller:  TextEditingController(
+                                          controller: TextEditingController(
                                               text: editProvider.classVenue),
                                           validator: (value) {
                                             if (value!.isEmpty) {
@@ -234,7 +231,7 @@ Padding(
                                         ),
                                       ),
                                     ),
-                                    //class start time and end time in a row
+
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Row(
@@ -242,13 +239,18 @@ Padding(
                                           Expanded(
                                             child: ListTile(
                                               contentPadding: EdgeInsets.zero,
-                                              title: Text('Start Time:',
+                                              title: Text('Class Period:',
                                                   style: styles.textStyle(
                                                       mobile: 15,
                                                       desktop: 18,
                                                       tablet: 16)),
                                               subtitle: CustomDropDown(
-                                                value: editProvider.startTime,
+                                                value: editProvider.startTime !=
+                                                            null &&
+                                                        editProvider.endTime !=
+                                                            null
+                                                    ? '${editProvider.startTime}-${editProvider.endTime}'
+                                                    : null,
                                                 items: timeList
                                                     .map((e) =>
                                                         DropdownMenuItem(
@@ -256,16 +258,16 @@ Padding(
                                                             child: Text(e)))
                                                     .toList(),
                                                 onSaved: (time) {
-                                                  notifier.setStartTime(
-                                                      time.toString());
+                                                  notifier
+                                                      .setTime(time.toString());
                                                 },
                                                 onChanged: (time) {
-                                                  notifier.setStartTime(
-                                                      time.toString());
+                                                  notifier
+                                                      .setTime(time.toString());
                                                 },
                                                 validator: (time) {
                                                   if (time == null) {
-                                                    return 'Start time is required';
+                                                    return 'Period is required';
                                                   }
                                                   return null;
                                                 },
@@ -273,44 +275,6 @@ Padding(
                                             ),
                                           ),
                                           const SizedBox(width: 5),
-                                          if (editProvider.startTime != null)
-                                            Expanded(
-                                              child: ListTile(
-                                                contentPadding: EdgeInsets.zero,
-                                                title: Text('End Time:',
-                                                    style: styles.textStyle(
-                                                        mobile: 15,
-                                                        desktop: 18,
-                                                        tablet: 16)),
-                                                subtitle: CustomDropDown(
-                                                  value: editProvider.endTime,
-                                                  items: timeList
-                                                      .sublist(timeList.indexOf(
-                                                              editProvider
-                                                                  .startTime!) +
-                                                          1)
-                                                      .map((e) =>
-                                                          DropdownMenuItem(
-                                                              value: e,
-                                                              child: Text(e)))
-                                                      .toList(),
-                                                  onSaved: (time) {
-                                                    notifier.setEndTime(
-                                                        time.toString());
-                                                  },
-                                                  onChanged: (time) {
-                                                    notifier.setEndTime(
-                                                        time.toString());
-                                                  },
-                                                  validator: (time) {
-                                                    if (time == null) {
-                                                      return 'End time is required';
-                                                    }
-                                                    return null;
-                                                  },
-                                                ),
-                                              ),
-                                            ),
                                         ],
                                       ),
                                     ),
@@ -378,7 +342,6 @@ Padding(
                                                 tablet: 16)),
                                         subtitle: Wrap(
                                           children: [
-                                            'All',
                                             '100',
                                             '200',
                                             '300',
@@ -393,20 +356,14 @@ Padding(
                                                     const EdgeInsets.all(8.0),
                                                 child: Row(
                                                   children: [
-                                                    Checkbox(
-                                                        value: editProvider
-                                                                    .availableToLevels !=
-                                                                null &&
-                                                            editProvider
-                                                                .availableToLevels!
-                                                                .contains(e),
+                                                    Radio<String>(
+                                                        groupValue: editProvider
+                                                            .availableToLevels,
+                                                        value: e,
                                                         onChanged: (value) {
-                                                          if (value!) {
+                                                          if (value != null) {
                                                             notifier
                                                                 .addLevel(e);
-                                                          } else {
-                                                            notifier
-                                                                .removeLevel(e);
                                                           }
                                                         }),
                                                     Text(
@@ -424,57 +381,6 @@ Padding(
                                         ),
                                       ),
                                     ),
-                                    //select private or public class using radio button
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: ListTile(
-                                        contentPadding: EdgeInsets.zero,
-                                        title: Text('Class Type:',
-                                            style: styles.textStyle(
-                                                mobile: 15,
-                                                desktop: 18,
-                                                tablet: 16)),
-                                        subtitle: Row(
-                                          children: [
-                                            Radio(
-                                              value: 'Public',
-                                              groupValue:
-                                                  editProvider.classType,
-                                              onChanged: (value) {
-                                                notifier.setClassType(
-                                                    value.toString());
-                                              },
-                                            ),
-                                            Text('Public',
-                                                style: styles.textStyle(
-                                                    mobile: 15,
-                                                    desktop: 18,
-                                                    tablet: 16)),
-                                            const SizedBox(width: 20),
-                                            Radio(
-                                              value: 'Private',
-                                              groupValue:
-                                                  editProvider.classType,
-                                              onChanged: (value) {
-                                                notifier.setClassType(
-                                                    value.toString());
-                                              },
-                                            ),
-                                            Text('Private',
-                                                style: styles.textStyle(
-                                                    mobile: 15,
-                                                    desktop: 18,
-                                                    tablet: 16)),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Text(
-                                        'Note: You will need to approve students to join private class.',
-                                        style: styles.textStyle(
-                                            mobile: 12,
-                                            desktop: 15,
-                                            tablet: 14)),
 
                                     const SizedBox(height: 15),
                                     Padding(

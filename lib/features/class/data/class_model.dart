@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:faker/faker.dart';
 import 'package:flutter/foundation.dart';
 
-
 import 'package:gps_student_attendance/core/constants/colors_list.dart';
 
 class ClassModel {
@@ -12,7 +11,7 @@ class ClassModel {
   String code;
   String? color;
   List<String>? availableToDepartments;
-  List<String>? availableToLevels;
+  String? availableToLevels;
   String? classType;
   String lecturerId;
   String lecturerName;
@@ -54,71 +53,97 @@ class ClassModel {
     String? id,
     String? name,
     String? code,
-    ValueGetter<String?>? color,
-    ValueGetter<List<String>?>? availableToDepartments,
-    ValueGetter<List<String>?>? availableToLevels,
-    ValueGetter<String?>? classType,
+    String? color,
+    List<String>? availableToDepartments,
+    String? availableToLevels,
+    String? classType,
     String? lecturerId,
     String? lecturerName,
-    ValueGetter<String?>? lecturerImage,
+    String? lecturerImage,
     List<String>? studentIds,
-    ValueGetter<String?>? classDay,
-    ValueGetter<String?>? classVenue,
-    ValueGetter<String?>? status,
-    ValueGetter<String?>? startTime,
-    ValueGetter<String?>? endTime,
-    ValueGetter<double?>? lat,
-    ValueGetter<double?>? long,
-    ValueGetter<int?>? createdAt,
+    String? classDay,
+    String? classVenue,
+    String? status,
+    String? startTime,
+    String? endTime,
+    double? lat,
+    double? long,
+    int? createdAt,
     List<Map<String, dynamic>>? students,
   }) {
     return ClassModel(
       id: id ?? this.id,
       name: name ?? this.name,
       code: code ?? this.code,
-      color: color != null ? color() : this.color,
-      availableToDepartments: availableToDepartments != null ? availableToDepartments() : this.availableToDepartments,
-      availableToLevels: availableToLevels != null ? availableToLevels() : this.availableToLevels,
-      classType: classType != null ? classType() : this.classType,
+      color: color ?? this.color,
+      availableToDepartments: availableToDepartments ?? this.availableToDepartments,
+      availableToLevels: availableToLevels ?? this.availableToLevels,
+      classType: classType ?? this.classType,
       lecturerId: lecturerId ?? this.lecturerId,
       lecturerName: lecturerName ?? this.lecturerName,
-      lecturerImage: lecturerImage != null ? lecturerImage() : this.lecturerImage,
+      lecturerImage: lecturerImage ?? this.lecturerImage,
       studentIds: studentIds ?? this.studentIds,
-      classDay: classDay != null ? classDay() : this.classDay,
-      classVenue: classVenue != null ? classVenue() : this.classVenue,
-      status: status != null ? status() : this.status,
-      startTime: startTime != null ? startTime() : this.startTime,
-      endTime: endTime != null ? endTime() : this.endTime,
-      lat: lat != null ? lat() : this.lat,
-      long: long != null ? long() : this.long,
-      createdAt: createdAt != null ? createdAt() : this.createdAt,
+      classDay: classDay ?? this.classDay,
+      classVenue: classVenue ?? this.classVenue,
+      status: status ?? this.status,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      lat: lat ?? this.lat,
+      long: long ?? this.long,
+      createdAt: createdAt ?? this.createdAt,
       students: students ?? this.students,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'code': code,
-      'color': color,
-      'availableToDepartments': availableToDepartments,
-      'availableToLevels': availableToLevels,
-      'classType': classType,
-      'lecturerId': lecturerId,
-      'lecturerName': lecturerName,
-      'lecturerImage': lecturerImage,
-      'studentIds': studentIds,
-      'classDay': classDay,
-      'classVenue': classVenue,
-      'status': status,
-      'startTime': startTime,
-      'endTime': endTime,
-      'lat': lat,
-      'long': long,
-      'createdAt': createdAt,
-      'students': students,
-    };
+    final result = <String, dynamic>{};
+  
+    result.addAll({'id': id});
+    result.addAll({'name': name});
+    result.addAll({'code': code});
+    if(color != null){
+      result.addAll({'color': color});
+    }
+    if(availableToDepartments != null){
+      result.addAll({'availableToDepartments': availableToDepartments});
+    }
+    result.addAll({'availableToLevels': availableToLevels});
+    if(classType != null){
+      result.addAll({'classType': classType});
+    }
+    result.addAll({'lecturerId': lecturerId});
+    result.addAll({'lecturerName': lecturerName});
+    if(lecturerImage != null){
+      result.addAll({'lecturerImage': lecturerImage});
+    }
+    result.addAll({'studentIds': studentIds});
+    if(classDay != null){
+      result.addAll({'classDay': classDay});
+    }
+    if(classVenue != null){
+      result.addAll({'classVenue': classVenue});
+    }
+    if(status != null){
+      result.addAll({'status': status});
+    }
+    if(startTime != null){
+      result.addAll({'startTime': startTime});
+    }
+    if(endTime != null){
+      result.addAll({'endTime': endTime});
+    }
+    if(lat != null){
+      result.addAll({'lat': lat});
+    }
+    if(long != null){
+      result.addAll({'long': long});
+    }
+    if(createdAt != null){
+      result.addAll({'createdAt': createdAt});
+    }
+    result.addAll({'students': students});
+  
+    return result;
   }
 
   factory ClassModel.fromMap(Map<String, dynamic> map) {
@@ -128,7 +153,7 @@ class ClassModel {
       code: map['code'] ?? '',
       color: map['color'],
       availableToDepartments: List<String>.from(map['availableToDepartments']),
-      availableToLevels: List<String>.from(map['availableToLevels']),
+      availableToLevels: map['availableToLevels'].runtimeType==String?map['availableToLevels']: map['availableToLevels'].runtimeType==List?map['availableToLevels'][0]:map['availableToLevels'],
       classType: map['classType'],
       lecturerId: map['lecturerId'] ?? '',
       lecturerName: map['lecturerName'] ?? '',
@@ -166,7 +191,7 @@ class ClassModel {
       other.code == code &&
       other.color == color &&
       listEquals(other.availableToDepartments, availableToDepartments) &&
-      listEquals(other.availableToLevels, availableToLevels) &&
+      other.availableToLevels == availableToLevels &&
       other.classType == classType &&
       other.lecturerId == lecturerId &&
       other.lecturerName == lecturerName &&

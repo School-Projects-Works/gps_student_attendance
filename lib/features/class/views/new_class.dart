@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,8 +11,6 @@ import 'package:gps_student_attendance/features/class/provider/new_class_provide
 import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import '../../../core/constants/classes_list.dart';
-
 class NewClass extends ConsumerStatefulWidget {
   const NewClass({super.key});
 
@@ -23,10 +20,6 @@ class NewClass extends ConsumerStatefulWidget {
 
 class _NewClassState extends ConsumerState<NewClass> {
   final _formKey = GlobalKey<FormState>();
-  var list = classList
-      .toList()
-      .map((map) => '${map['code']} : ${map['title']}')
-      .toList();
   @override
   Widget build(BuildContext context) {
     var styles = CustomStyles(context: context);
@@ -108,73 +101,52 @@ class _NewClassState extends ConsumerState<NewClass> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: ListTile(
                                         contentPadding: EdgeInsets.zero,
-                                        title: Text('Select Course:',
+                                        title: Text('Course Code:',
                                             style: styles.textStyle(
                                                 mobile: 15,
                                                 desktop: 18,
                                                 tablet: 16)),
-                                        subtitle: CustomDropDown(
-                                          items: list
-                                              .map((course) => DropdownMenuItem(
-                                                  value: course,
-                                                  child: Text(course)))
-                                              .toList(),
-                                          hintText: 'Select Course ',
+                                        subtitle: CustomTextFields(
+                                          max: 7,
+                                          isCapitalized: true,
+                                          hintText: 'Enter Course Code',
                                           validator: (value) {
                                             if (value!.isEmpty) {
-                                              return 'Course is required';
+                                              return 'Course code is required';
                                             }
                                             return null;
                                           },
-                                          onChanged: (value) {
-                                            if (value != null) {
-                                              var code = value
-                                                  .toString()
-                                                  .split(':')
-                                                  .first
-                                                  .trim();
-                                              var classItem = classList
-                                                  .where((map) =>
-                                                      map.values.contains(code))
-                                                  .toList()
-                                                  .firstOrNull;
-                                              if (classItem != null) {
-                                                notifier.setCode(classItem);
-                                              } else {
-                                                if (kDebugMode) {
-                                                  print('No class ===');
-                                                }
-                                              }
-                                            }
+                                          onSaved: (value) {
+                                            notifier.setCode(value!);
                                           },
                                         ),
                                       ),
                                     ),
                                     //class title
-                                    // Padding(
-                                    //   padding: const EdgeInsets.all(8.0),
-                                    //   child: ListTile(
-                                    //     contentPadding: EdgeInsets.zero,
-                                    //     title: Text('Course Title:',
-                                    //         style: styles.textStyle(
-                                    //             mobile: 15,
-                                    //             desktop: 18,
-                                    //             tablet: 16)),
-                                    //     subtitle: CustomTextFields(
-                                    //       hintText: 'Enter Course Title',
-                                    //       validator: (value) {
-                                    //         if (value!.isEmpty) {
-                                    //           return 'Course title is required';
-                                    //         }
-                                    //         return null;
-                                    //       },
-                                    //       onSaved: (value) {
-                                    //         notifier.setName(value!);
-                                    //       },
-                                    //     ),
-                                    //   ),
-                                    // ),
-                                    // //class venue
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ListTile(
+                                        contentPadding: EdgeInsets.zero,
+                                        title: Text('Course Title:',
+                                            style: styles.textStyle(
+                                                mobile: 15,
+                                                desktop: 18,
+                                                tablet: 16)),
+                                        subtitle: CustomTextFields(
+                                          hintText: 'Enter Course Title',
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return 'Course title is required';
+                                            }
+                                            return null;
+                                          },
+                                          onSaved: (value) {
+                                            notifier.setName(value!);
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    //class venue
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: ListTile(
@@ -244,7 +216,7 @@ class _NewClassState extends ConsumerState<NewClass> {
                                           Expanded(
                                             child: ListTile(
                                               contentPadding: EdgeInsets.zero,
-                                              title: Text('Start Time:',
+                                              title: Text('Class Period:',
                                                   style: styles.textStyle(
                                                       mobile: 15,
                                                       desktop: 18,
@@ -257,61 +229,23 @@ class _NewClassState extends ConsumerState<NewClass> {
                                                             child: Text(e)))
                                                     .toList(),
                                                 onSaved: (time) {
-                                                  notifier.setStartTime(
+                                                  notifier.setTime(
                                                       time.toString());
                                                 },
                                                 onChanged: (time) {
-                                                  notifier.setStartTime(
+                                                  notifier.setTime(
                                                       time.toString());
                                                 },
                                                 validator: (time) {
                                                   if (time == null) {
-                                                    return 'Start time is required';
+                                                    return 'Class Period is required';
                                                   }
                                                   return null;
                                                 },
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(width: 5),
-                                          if (classProvider.startTime != null)
-                                            Expanded(
-                                              child: ListTile(
-                                                contentPadding: EdgeInsets.zero,
-                                                title: Text('End Time:',
-                                                    style: styles.textStyle(
-                                                        mobile: 15,
-                                                        desktop: 18,
-                                                        tablet: 16)),
-                                                subtitle: CustomDropDown(
-                                                  items: timeList
-                                                      .sublist(timeList.indexOf(
-                                                              classProvider
-                                                                  .startTime!) +
-                                                          1)
-                                                      .map((e) =>
-                                                          DropdownMenuItem(
-                                                              value: e,
-                                                              child: Text(e)))
-                                                      .toList(),
-                                                  onSaved: (time) {
-                                                    notifier.setEndTime(
-                                                        time.toString());
-                                                  },
-                                                  onChanged: (time) {
-                                                    notifier.setEndTime(
-                                                        time.toString());
-                                                  },
-                                                  validator: (time) {
-                                                    if (time == null) {
-                                                      return 'End time is required';
-                                                    }
-                                                    return null;
-                                                  },
-                                                ),
-                                              ),
-                                            ),
-                                        ],
+                                          ],
                                       ),
                                     ),
                                     // department dropdown
@@ -378,7 +312,6 @@ class _NewClassState extends ConsumerState<NewClass> {
                                                 tablet: 16)),
                                         subtitle: Wrap(
                                           children: [
-                                            'All',
                                             '100',
                                             '200',
                                             '300',
@@ -393,20 +326,14 @@ class _NewClassState extends ConsumerState<NewClass> {
                                                     const EdgeInsets.all(8.0),
                                                 child: Row(
                                                   children: [
-                                                    Checkbox(
-                                                        value: classProvider
-                                                                    .availableToLevels !=
-                                                                null &&
-                                                            classProvider
-                                                                .availableToLevels!
-                                                                .contains(e),
+                                                    Radio(
+                                                        groupValue: classProvider
+                                                            .availableToLevels,
+                                                        value: e,
                                                         onChanged: (value) {
-                                                          if (value!) {
+                                                          if (value != null) {
                                                             notifier
                                                                 .addLevel(e);
-                                                          } else {
-                                                            notifier
-                                                                .removeLevel(e);
                                                           }
                                                         }),
                                                     Text(

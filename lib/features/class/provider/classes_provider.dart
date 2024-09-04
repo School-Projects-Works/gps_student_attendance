@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gps_student_attendance/core/widget/custom_dialog.dart';
-import 'package:gps_student_attendance/features/attendance/services/attendance_services.dart';
 import 'package:gps_student_attendance/features/class/data/class_model.dart';
 import 'package:gps_student_attendance/features/class/services/class_services.dart';
 import '../../auth/data/user_model.dart';
@@ -44,8 +43,6 @@ class ClassProvider extends StateNotifier<List<ClassModel>> {
       CustomDialog.showError(message: 'Failed to delete class');
       return;
     }
-    //get all attendance for that class and delete
-    await AttendanceServices.deleteAllAttendance(classId: id);
     state = state.where((e) => e.id != id).toList();
     CustomDialog.dismiss();
     CustomDialog.showToast(message: 'Class Deleted Successfully');
@@ -95,7 +92,7 @@ class JoinClass extends StateNotifier<void> {
       return;
     }
     //check if class level is all or equal to user level
-    if (!classModel.availableToLevels!.contains(users.level)) {
+    if (classModel.availableToLevels!=users.level) {
       CustomDialog.dismiss();
       CustomDialog.showError(
           message: 'This class is not available to your level');
@@ -103,22 +100,15 @@ class JoinClass extends StateNotifier<void> {
     }
     //add user id to class studentIds
     classModel.studentIds.add(users.id!);
-    //check if class type is private
-    if (classModel.classType!.toLowerCase() != 'public') {
-      await ClassServices.updateClass(classModel);
-      //check if user id is equal to lecturer id
-      CustomDialog.dismiss();
-      CustomDialog.showToast(
-          message:
-              'You have successfully joined class, Pending approval from lecturer');
-    } else {
+
+ 
       //add student map to class students
       classModel.students.add(users.toMap());
       //update class
       await ClassServices.updateClass(classModel);
       CustomDialog.dismiss();
       CustomDialog.showToast(message: 'You have successfully joined class');
-    }
+    
     CustomDialog.dismiss();
   }
 

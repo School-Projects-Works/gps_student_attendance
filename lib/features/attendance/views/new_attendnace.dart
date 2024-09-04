@@ -140,35 +140,16 @@ class _NewAttendanceState extends ConsumerState<NewAttendance> {
               ],
             ),
           const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: CustomDropDown(
-                    items: timeList
-                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                        .toList(),
-                    hintText: 'Start Time',
-                    value: newAttendance.startTime,
-                    onChanged:
-                        defaultValues.useDefaultTime ? null : (value) {
-                      notifier.setStartTime(value.toString());
-                        }),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: CustomDropDown(
-                    items: timeList
-                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                        .toList(),
-                    hintText: 'End Time',
-                    value: newAttendance.endTime,
-                    onChanged:
-                        defaultValues.useDefaultTime ? null : (value) {
-                      notifier.setEndTime(value.toString());
-                        }),
-              ),
-            ],
-          ),
+          CustomDropDown(
+              items: timeList
+                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                  .toList(),
+              hintText: 'Class Time',
+              value: newAttendance.startTime,
+              onChanged:
+                  defaultValues.useDefaultTime ? null : (value) {
+                notifier.setTime(value.toString());
+                  }),
           const SizedBox(height: 20),
           if (
               newAttendance.lat != null &&
@@ -245,14 +226,11 @@ class _NewAttendanceState extends ConsumerState<NewAttendance> {
                     CustomDialog.showToast(message: 'Please select a class');
                     return;
                   }
-                  if (newAttendance.startTime == null) {
-                    CustomDialog.showToast(message: 'Please select start time');
+                  if (newAttendance.startTime == null||newAttendance.endTime == null) {
+                    CustomDialog.showToast(message: 'Please select class Period');
                     return;
                   }
-                  if (newAttendance.endTime == null) {
-                    CustomDialog.showToast(message: 'Please select end time');
-                    return;
-                  }
+                  
                   if (ref.watch(lacTextProvider).$1.text.isEmpty ||
                       ref.watch(lacTextProvider).$2.text.isEmpty) {
                     CustomDialog.showToast(message: 'Please enter location');

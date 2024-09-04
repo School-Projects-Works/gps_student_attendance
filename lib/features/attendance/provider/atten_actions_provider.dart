@@ -103,13 +103,12 @@ class NewAttendanceProvider extends StateNotifier<AttendanceModel> {
         classData.long != null ? classData.long.toString() : '');
   }
 
-  void setStartTime(String string) {
-    state = state.copyWith(startTime: () => string);
+  void setTime(String string) {
+    var time = string.split('-');
+    state = state.copyWith(startTime: () => time[0], endTime: () => time[1]);
   }
 
-  void setEndTime(String string) {
-    state = state.copyWith(endTime: () => string);
-  }
+ 
 
   void startAttendance(
       {required WidgetRef ref,
@@ -145,7 +144,7 @@ class NewAttendanceProvider extends StateNotifier<AttendanceModel> {
         classModel.lat != double.parse(lat) ||
         classModel.long != double.parse(long)) {
       classModel = classModel.copyWith(
-          lat: () => double.parse(lat), long: () => double.parse(long));
+          lat: double.parse(lat), long: double.parse(long));
       await ClassServices.updateClass(classModel);
     }
     var (status, message) =
