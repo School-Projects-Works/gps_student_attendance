@@ -1,6 +1,5 @@
-import 'package:faker/faker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gps_student_attendance/config/router/router_info.dart';
@@ -142,7 +141,9 @@ class _NewClassState extends ConsumerState<NewClass> {
                                               if (classItem != null) {
                                                 notifier.setCode(classItem);
                                               } else {
-                                                print('No class ===');
+                                                if (kDebugMode) {
+                                                  print('No class ===');
+                                                }
                                               }
                                             }
                                           },

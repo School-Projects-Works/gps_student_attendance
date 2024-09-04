@@ -5,9 +5,9 @@ class TimeUtils {
   static TimeOfDay stringToTimeOfDay(String tod) {
     var hour = int.parse(tod.split(":")[0]);
     var minute = int.parse(tod.split(":")[1].split(" ")[0]);
-    var am_pm = tod.split(":")[1].split(" ")[1];
-    if (am_pm == "PM" && hour != 12) hour += 12;
-    if (am_pm == "AM" && hour == 12) hour = 0;
+    var amPm = tod.split(":")[1].split(" ")[1];
+    if (amPm == "PM" && hour != 12) hour += 12;
+    if (amPm == "AM" && hour == 12) hour = 0;
     return TimeOfDay(hour: hour, minute: minute);
   }
 

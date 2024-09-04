@@ -5,7 +5,6 @@ import 'package:gps_student_attendance/core/functions/navigation.dart';
 import 'package:gps_student_attendance/core/widget/custom_button.dart';
 import 'package:gps_student_attendance/core/widget/custom_input.dart';
 import 'package:gps_student_attendance/features/auth/provider/login_provider.dart';
-import 'package:gps_student_attendance/generated/assets.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
@@ -24,7 +23,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     var styles = CustomStyles(context: context);
     var breakPoint = ResponsiveBreakpoints.of(context);
-    var provider = ref.watch(loginProvider);
+    ref.watch(loginProvider);
     var notifier = ref.read(loginProvider.notifier);
 
     return SingleChildScrollView(
@@ -49,7 +48,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ? double.infinity
                         : breakPoint.screenWidth < 1200
                             ? breakPoint.screenWidth * .75
-                            : breakPoint.screenWidth * .45,
+                            : breakPoint.screenWidth * .6,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         color: Colors.white),

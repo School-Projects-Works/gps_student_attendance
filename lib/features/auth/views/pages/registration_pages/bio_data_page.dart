@@ -12,7 +12,7 @@ class BioDataPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var styles = CustomStyles(context: context);
-    var provider = ref.watch(newUserProvider);
+    ref.watch(newUserProvider);
     var notifier = ref.read(newUserProvider.notifier);
 
     return Padding(
@@ -124,16 +124,16 @@ class BioDataPage extends ConsumerWidget {
                           child: CustomTextFields(
                             color: Colors.green[700]!,
                             suffixIcon: IconButton(
-                              icon: Icon(ref.watch(absecuredProvider)
+                              icon: Icon(ref.watch(obsecureProvider)
                                   ? Icons.visibility
                                   : Icons.visibility_off),
                               onPressed: () {
-                                ref.read(absecuredProvider.notifier).state =
-                                    !ref.read(absecuredProvider);
+                                ref.read(obsecureProvider.notifier).state =
+                                    !ref.read(obsecureProvider);
                               },
                             ),
                             hintText: 'Enter Password',
-                            obscureText: ref.watch(absecuredProvider),
+                            obscureText: ref.watch(obsecureProvider),
                             onChanged: (value) {
                               notifier.setPassword(value);
                             },

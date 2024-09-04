@@ -125,4 +125,4 @@ class NewUserProvider extends StateNotifier<Users> {
   }
 }
 
-final absecuredProvider = StateProvider<bool>((ref) => true);
+final obsecureProvider = StateProvider<bool>((ref) => true);

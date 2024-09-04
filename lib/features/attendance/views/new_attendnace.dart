@@ -6,9 +6,7 @@ import 'package:gps_student_attendance/core/widget/custom_drop_down.dart';
 import 'package:gps_student_attendance/core/widget/custom_input.dart';
 import 'package:gps_student_attendance/features/class/data/class_model.dart';
 import 'package:gps_student_attendance/features/class/provider/classes_provider.dart';
-import 'package:gps_student_attendance/generated/assets.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../../core/widget/custom_dialog.dart';
@@ -31,7 +29,7 @@ class _NewAttendanceState extends ConsumerState<NewAttendance> {
     if (widget.classModel != null) {
       //Check if app is done building
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        notifier.setClass(ref: ref, calssData: widget.classModel!);
+        notifier.setClass(ref: ref, classData: widget.classModel!);
       });
     }
   }
@@ -41,11 +39,11 @@ class _NewAttendanceState extends ConsumerState<NewAttendance> {
     return Scaffold(
         backgroundColor: Colors.transparent,
         body: Center(
-          child: _newAttendnace(classModel: widget.classModel),
+          child: _newAttendance(classModel: widget.classModel),
         ));
   }
 
-  Widget _newAttendnace({ClassModel? classModel}) {
+  Widget _newAttendance({ClassModel? classModel}) {
     var user = ref.watch(userProvider);
     var breakPoint = ResponsiveBreakpoints.of(context);
     var styles = CustomStyles(context: context);
@@ -118,7 +116,7 @@ class _NewAttendanceState extends ConsumerState<NewAttendance> {
                   ? (value) {
                       notifier.setClass(
                           ref: ref,
-                          calssData: classList
+                          classData: classList
                               .firstWhere((element) => element.code == value));
                     }
                   : null),

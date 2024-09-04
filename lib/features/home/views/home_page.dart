@@ -23,7 +23,7 @@ class HomePage extends ConsumerWidget {
     // var userStream = ref.watch(loginProviderStream);
 
     var user = ref.watch(userProvider);
-    var breakPiont = ResponsiveBreakpoints.of(context);
+    var breakPoint = ResponsiveBreakpoints.of(context);
     var styles = CustomStyles(context: context);
     var classList = user.userType == 'Lecturer'
         ? ref.watch(classProvider)
@@ -64,14 +64,14 @@ class HomePage extends ConsumerWidget {
               child: IconButton(
                 style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(primaryColor),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(primaryColor),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                      WidgetStateProperty.all<Color>(Colors.white),
                 ),
                 icon: const Icon(Icons.add),
                 onPressed: null,
@@ -82,12 +82,12 @@ class HomePage extends ConsumerWidget {
                       context: context, route: RouterInfo.newClassRoute);
                 } else {
                   CustomDialog.showCustom(
-                      width: breakPiont.isMobile
-                          ? breakPiont.screenWidth
-                          : breakPiont.isTablet
-                              ? breakPiont.screenWidth * 0.5
-                              : breakPiont.screenWidth * 0.3,
-                      height: breakPiont.screenHeight,
+                      width: breakPoint.isMobile
+                          ? breakPoint.screenWidth
+                          : breakPoint.isTablet
+                              ? breakPoint.screenWidth * 0.5
+                              : breakPoint.screenWidth * 0.3,
+                      height: breakPoint.screenHeight,
                       ui: const ClassSearchPage());
                 }
               },
@@ -99,7 +99,7 @@ class HomePage extends ConsumerWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (breakPiont.largerThan(TABLET))
+              if (breakPoint.largerThan(TABLET))
                 Padding(
                   padding: const EdgeInsets.only(right: 20),
                   child: _buildSideList(ref: ref, context: context),

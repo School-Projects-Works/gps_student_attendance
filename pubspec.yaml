@@ -15,33 +15,33 @@ dependencies:
   go_router: ^14.1.3
   riverpod: ^2.5.1
   flutter_riverpod: ^2.5.1
-  flutter_native_splash: ^2.4.0
-  flutter_smart_dialog: ^4.9.7+5
+  flutter_native_splash: ^2.4.1
+  flutter_smart_dialog: ^4.9.8
   flutter_spinkit: ^5.2.1
-  responsive_framework: ^1.4.0
+  responsive_framework: ^1.5.1
   flutter_walkthrough_screen: ^2.0.2
-  firebase_core: ^2.27.0
+  firebase_core: ^3.4.0
   animate_do: ^3.3.4
-  firebase_auth: ^4.19.4
-  cloud_firestore: ^4.17.2
-  url_strategy: ^0.2.0
+  firebase_auth: ^5.2.0
+  cloud_firestore: ^5.4.0
+  url_strategy: ^0.3.0
   hive: ^2.2.3
-  faker: ^2.1.0
-  image_picker: ^1.1.1
-  image_picker_for_web: ^3.0.4
-  firebase_storage: ^11.7.4
-  path_provider: ^2.1.3
-  rxdart: ^0.27.7
-  geolocator: ^11.0.0
+  faker: ^2.2.0
+  image_picker: ^1.1.2
+  image_picker_for_web: ^3.0.5
+  firebase_storage: ^12.2.0
+  path_provider: ^2.1.4
+  rxdart: ^0.28.0
+  geolocator:
   qr_flutter: ^4.1.0
-  pdf: ^3.10.8
-  file_saver: ^0.2.12
+  pdf: ^3.11.1
+  file_saver:
   intl: ^0.19.0
   camera: ^0.11.0
   flutter_barcode_sdk: ^2.2.6
-  camera_web: ^0.3.3
+  camera_web: ^0.3.5
   qr_code_scanner: ^1.0.1
-  excel: ^4.0.3
+  excel: ^4.0.6
 
 dev_dependencies:
   flutter_test:

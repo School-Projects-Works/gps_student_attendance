@@ -20,7 +20,7 @@ class ClassSearchPage extends ConsumerStatefulWidget {
 class _ClassSearchPageState extends ConsumerState<ClassSearchPage> {
   @override
   Widget build(BuildContext context) {
-    var user = ref.watch(userProvider);
+    ref.watch(userProvider);
     var breakPoint = ResponsiveBreakpoints.of(context);
     var styles = CustomStyles(context: context);
     var filteredList = ref.watch(filteredClassList);

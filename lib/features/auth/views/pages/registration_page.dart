@@ -54,7 +54,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                               ResponsiveBreakpoints.of(context).screenWidth <
                                   1280
                           ? ResponsiveBreakpoints.of(context).screenWidth * 0.6
-                          : ResponsiveBreakpoints.of(context).screenWidth * 0.3,
+                          : ResponsiveBreakpoints.of(context).screenWidth * 0.5,
               child: () {
                 switch (ref.watch(currentScreenProvider)) {
                   case 0:

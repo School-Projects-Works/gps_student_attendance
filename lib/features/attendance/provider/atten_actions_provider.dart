@@ -88,19 +88,19 @@ final newAttendanceProvider =
 class NewAttendanceProvider extends StateNotifier<AttendanceModel> {
   NewAttendanceProvider() : super(AttendanceModel());
 
-  void setClass({required WidgetRef ref, required ClassModel calssData}) {
+  void setClass({required WidgetRef ref, required ClassModel classData}) {
     state = state.copyWith(
-      classCode: () => calssData.code,
-      className: () => calssData.name,
-      classId: () => calssData.id,
-      startTime: () => calssData.startTime,
-      endTime: () => calssData.endTime,
-      lat: () => calssData.lat,
-      long: () => calssData.long,
+      classCode: () => classData.code,
+      className: () => classData.name,
+      classId: () => classData.id,
+      startTime: () => classData.startTime,
+      endTime: () => classData.endTime,
+      lat: () => classData.lat,
+      long: () => classData.long,
     );
     ref.read(lacTextProvider.notifier).setLocationText(
-        calssData.lat != null ? calssData.lat.toString() : '',
-        calssData.long != null ? calssData.long.toString() : '');
+        classData.lat != null ? classData.lat.toString() : '',
+        classData.long != null ? classData.long.toString() : '');
   }
 
   void setStartTime(String string) {
@@ -185,7 +185,7 @@ class AttendanceProvider extends StateNotifier<List<AttendanceModel>> {
       required WidgetRef ref}) async {
     CustomDialog.showLoading(message: 'Marking Attendance....');
     var user = ref.watch(userProvider);
-    //get current dat eand time
+    //get current dat end time
     var now = DateTime.now();
     var dateFormat = DateFormat('yyyy-MM-dd');
     String today = dateFormat.format(now);
@@ -201,9 +201,7 @@ class AttendanceProvider extends StateNotifier<List<AttendanceModel>> {
       return;
     }
     if (attendanceDate != today) {
-      print('=========================================== day check');
-      print(attendanceDate);
-      print(today);
+     
       CustomDialog.dismiss();
       CustomDialog.showError(message: 'Attendance is over');
       return;
@@ -216,9 +214,7 @@ class AttendanceProvider extends StateNotifier<List<AttendanceModel>> {
     }
     if (now.isAfter(DateTime(
         now.year, now.month, now.day, endTime.hour + 12, endTime.minute))) {
-      print('=========================================== time check');
-      print('${endTime.hour} ${endTime.minute}');
-      print('${now.hour} ${now.minute}');
+     
       CustomDialog.dismiss();
       CustomDialog.showError(message: 'Attendance is over');
       return;
@@ -257,7 +253,7 @@ class AttendanceProvider extends StateNotifier<List<AttendanceModel>> {
       if (success) {
         var distance = GPSServices.calculateDistance(position!.latitude,
             position.longitude, attendance.lat!, attendance.long!);
-        print('Distance=====================$distance');
+       
         if (distance == null || distance > 300) {
           CustomDialog.dismiss();
           CustomDialog.showError(
@@ -300,9 +296,9 @@ class AttendanceProvider extends StateNotifier<List<AttendanceModel>> {
     CustomDialog.dismiss();
     CustomDialog.showLoading(message: 'Ending Attendance....');
     attendance = attendance.copyWith(status: () => 'ended');
-    var (sucess, message) =
+    var (success, message) =
         await AttendanceServices.updateAttendance(attendance: attendance);
-    if (sucess) {
+    if (success) {
       CustomDialog.dismiss();
       CustomDialog.showSuccess(message: message);
     } else {

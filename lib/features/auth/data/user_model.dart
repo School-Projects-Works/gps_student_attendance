@@ -255,7 +255,7 @@ class Users {
         "prefix": "Mr."
       },
       {
-        "name": "Scarlett Garcia",
+        "name": "Scarlets Garcia",
         "gender": "female",
         "phoneNumber": "321-098-7654",
         "prefix": "Ms."
@@ -285,7 +285,7 @@ class Users {
         "prefix": "Ms."
       },
       {
-        "name": "Aiden Lewis",
+        "name": "Aden Lewis",
         "gender": "male",
         "phoneNumber": "876-543-2109",
         "prefix": "Mr."
@@ -321,7 +321,7 @@ class Users {
         "prefix": "Ms."
       },
       {
-        "name": "Jayden Gonzalez",
+        "name": "Jarden Gonzalez",
         "gender": "male",
         "phoneNumber": "210-987-6543",
         "prefix": "Mr."
@@ -706,30 +706,32 @@ class Users {
       },
     ];
     List<Users> data = [];
-    final _faker = Faker();
+    final faker = Faker();
     for (int i = 0; i < combinedList.length; i++) {
-      var usertype = i > 75 ? 'Lecturer' : 'Student';
-      var prefix = i > 75 ? _faker.randomGenerator.element(['Dr.', 'Prof.']) : _faker.randomGenerator.element(['Mr.', 'Ms.']);
+      var userType = i > 75 ? 'Lecturer' : 'Student';
+      var prefix = i > 75
+          ? faker.randomGenerator.element(['Dr.', 'Prof.'])
+          : faker.randomGenerator.element(['Mr.', 'Ms.']);
       data.add(Users(
           name: combinedList[i]['name'],
-          id: _faker.guid.guid(),
-          userType: usertype,
-          password: _faker.internet.password(),
-          email: _faker.internet.email(),
-          createdAt: _faker.date.dateTime().millisecondsSinceEpoch,
-          department: _faker.randomGenerator.element(departmentList),
+          id: faker.guid.guid(),
+          userType: userType,
+          password: faker.internet.password(),
+          email: faker.internet.email(),
+          createdAt: faker.date.dateTime().millisecondsSinceEpoch,
+          department: faker.randomGenerator.element(departmentList),
           gender: combinedList[i]['gender'],
-          //10 digit number 
-          indexNumber: _faker.randomGenerator.numbers(9,10).toList().join(),
+          //10 digit number
+          indexNumber: faker.randomGenerator.numbers(9, 10).toList().join(),
           phone: combinedList[i]['phoneNumber'],
-          profileImage: _faker.image.image(),
-          program: _faker.randomGenerator.element([
+          profileImage: faker.image.loremPicsum(),
+          program: faker.randomGenerator.element([
             'BSc Computer Science',
             'BSc Information Technology',
             'BSc Mathematics',
             'BSc Statistics'
           ]),
-          level: _faker.randomGenerator
+          level: faker.randomGenerator
               .element(['100', '200', '300', '400', 'Graduate']),
           prefix: prefix));
     }

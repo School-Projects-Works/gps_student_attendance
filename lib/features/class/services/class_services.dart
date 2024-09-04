@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:gps_student_attendance/features/class/data/class_model.dart';
 
 class ClassServices {
@@ -29,7 +30,9 @@ class ClassServices {
     await firestore.collection('classes').doc(classModel.id).update(data);
     return true;
     }catch(e){
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }
@@ -40,7 +43,9 @@ class ClassServices {
       await firestore.collection('classes').doc(id).delete();
       return true;
     }catch(e){
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
     // Delete a class
