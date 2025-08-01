@@ -2,10 +2,11 @@ import 'dart:io';
 import 'package:gps_student_attendance/features/attendance/data/attendance_model.dart';
 import 'package:gps_student_attendance/features/attendance/provider/atten_actions_provider.dart';
 import 'package:gps_student_attendance/features/class/data/class_model.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gps_student_attendance/utils/styles.dart';
+import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
 class QRScannerPage extends ConsumerStatefulWidget {
   const QRScannerPage({this.classModel, this.attendanceModel, super.key});

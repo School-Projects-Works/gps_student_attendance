@@ -97,6 +97,6 @@ class _QRWidgetState extends State<QRWidget> {
     );
     final file = await pdf.save();
     await FileSaver.instance.saveFile(
-        name: widget.id, ext: 'pdf', mimeType: MimeType.pdf, bytes: file);
+        name: widget.id, fileExtension: 'pdf', mimeType: MimeType.pdf, bytes: file);
   }
 }
